@@ -1,0 +1,31 @@
+<html>
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    
+        
+  <!-- note: the <a> tag here is only for preview,
+       it will be replaced by the link panel contents -->
+  <div ></div>
+     <table cellspacing="0" cellpadding="1" border="1">
+		<thead>
+		 <tr>
+        <th> Name  <!--<br/>-->
+            <form wicket:id="searchForm">
+                <div wicket:id="feedback"></div>
+                <input type="text" wicket:id="locnameSearch" required/>
+                <input type="submit" value="Search"/>
+               <!-- <button wicket:id="button">Ajax Button</button>-->
+            </form>
+        </th>
+       
+    </tr>
+     </thead>
+		
+		</table>
+		<div id="bd">
+		<table wicket:id="datatable" class="dataview" cellspacing="0" cellpadding="1" border="1">		
+		</table>
+		</div>
+		
+    </wicket:panel>
+    </html>
+    

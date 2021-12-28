@@ -1,0 +1,16 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "bitbucket"]
+	url = https://bitbucket.org/Lyudmilab/maglabproject/
+	fetch = +refs/heads/master:refs/remotes/bitbucket/master
+[branch "master"]
+	remote = bitbucket
+	merge = refs/heads/master
+[remote "origin"]
+	url = https://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@github.com/luda171/Maglab-Metadata-Hub.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
