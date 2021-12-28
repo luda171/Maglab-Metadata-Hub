@@ -11,12 +11,36 @@ The Metadata hub  provides the user interface and  API to sync captured data and
 ### How do I get set up? ###
 
 * Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+JAVA 8
+with  Maven installed  to compile
+mvn clean install
 
+* Configuration
+edit src/main/resources/config.properties with your custom parameters
+osf.callback = https://<hostname>/rest/callback
+maglabfairdata.clientID = a7****d36acb8b7d2b5f28246
+maglabfairdata.clientSecret = Oi****peigyMLlmcpIX61xmcNIAGuLCpCcayFdn
+cal.facility=Pulsed Field
+edit src/main/resources/application.properties and config.properties with
+proxy settings.
+ 
+
+
+* Database configuration
+application uses sqlite db
+schema sql at src/main/resources/pulsefacility.sql
+sample db included ./pulsefacility.db
+to go to db cli:
+sqlite3 pulsefacility.db
+  
+* Deployment instructions
+* How to run 
+ nohup ./magstart.sh > out2.txt &
+###CLENT interface at 
+ http://localhost/cal
+###API
+based on JAX-RS
+http://localhost/rest/
 
 
 ### Who do I talk to? ###
