@@ -15,7 +15,7 @@ import com.maglab.model.Experiment;
 @Service
 public class ExperimentService {
 	//private static final String SQL_SELECT_ALL_EXPERIMENTS = "SELECT * FROM dedupexperiments;";
-	private static final String SQL_SELECT_ALL_EXPERIMENTS = "SELECT * FROM experiments order by dtstart desc;";
+	private static final String SQL_SELECT_ALL_EXPERIMENTS = "SELECT * FROM experiments;";
 	private static final String SQL_SELECT_NOW_EXPERIMENTS = "SELECT * FROM experiments where location=? and `dtend` >= ? and dtstart<= ? ;";
 	
 	private static final String SQL_SELECT_byLocation_EXPERIMENTS = "SELECT * FROM experiments where location=?  ;";

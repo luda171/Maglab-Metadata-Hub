@@ -20,6 +20,7 @@ dist/
 *.jar
 #app db files
 *.db
+*.db.local
 
 # Maven
 target/

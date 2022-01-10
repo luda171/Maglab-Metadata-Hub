@@ -19,7 +19,7 @@ dist/
 # Package files
 *.jar
 #app db files
-*.db
+pulsefacility.db
 *.db.local
 
 # Maven
