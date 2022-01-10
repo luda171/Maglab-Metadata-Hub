@@ -18,6 +18,9 @@ dist/
 
 # Package files
 *.jar
+#app db files
+*.db
+*.db.local
 
 # Maven
 target/

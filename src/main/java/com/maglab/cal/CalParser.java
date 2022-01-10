@@ -48,6 +48,7 @@ public class CalParser {
 			+ " experiment_title,proposal_title,proposal_number,dtstart,dtend, "
 			+ " dtstamp, summary, support ," + " dtupdate,pid,calID) " + "values(?,?,?,?,?," + "?,?,?,?,?"
 			+ ",?,?,?" + ",?,?,?)";
+	String delete_SQL="delete from experiments where dtupdate < DATETIME('now', '-1 day') and localupdate is NULL and dtstart>  DATETIME('now', '-10 day') ";
 	private static final String CHECK_EXPERIMENT = "SELECT count(*) FROM experiments where calID=? and localupdate IS NOT NULL  ;";
 	SimpleDateFormat dfs = new SimpleDateFormat("yyyyMMdd");
 	SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
@@ -258,6 +259,7 @@ public class CalParser {
 							
 						insert(ex, conn);
 						}
+							delete(conn);
 						System.out.println("finished loading calendar for: " +facilityfilter);
 						System.out.println("proxy"+proxy);
 						// statement.close();
@@ -282,7 +284,32 @@ public class CalParser {
 		}
 
 	}
-
+public void delete(Connection conn) {
+	PreparedStatement ps = null;
+	int numRowsInserted = 0;
+	try {
+		ps = conn.prepareStatement(delete_SQL);
+		numRowsInserted = ps.executeUpdate();
+		System.out.print("deleted:" + numRowsInserted);
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	finally {
+		
+			
+			if (ps!=null) {
+			try {
+				ps.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			}
+			
+		} 
+	
+}
 	public void insert(Experiment ex, Connection conn) {
 		int numRowsInserted = 0;
 		PreparedStatement pss = null;
