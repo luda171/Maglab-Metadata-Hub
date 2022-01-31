@@ -15,7 +15,7 @@ import com.maglab.model.Experiment;
 @Service
 public class ExperimentService {
 	//private static final String SQL_SELECT_ALL_EXPERIMENTS = "SELECT * FROM dedupexperiments;";
-	private static final String SQL_SELECT_ALL_EXPERIMENTS = "SELECT * FROM experiments;";
+	private static final String SQL_SELECT_ALL_EXPERIMENTS = "SELECT * FROM experiments order by date(dtstart) desc;";
 	private static final String SQL_SELECT_NOW_EXPERIMENTS = "SELECT * FROM experiments where location=? and `dtend` >= ? and dtstart<= ? ;";
 	
 	private static final String SQL_SELECT_byLocation_EXPERIMENTS = "SELECT * FROM experiments where location=?  ;";
@@ -25,8 +25,8 @@ public class ExperimentService {
 	private static final String SQL_SELECT_EXPERIMENT_byStartPID = "SELECT * FROM experiments where pid=? and dtstart= ? ;";
 	private static final String SQL_SELECT_EXPERIMENT_Overlap="select * from experiments where location=? and dtstart<=? and dtend >=? ;";
 	
-	private static final String SQL_UPDATE_EXP ="UPDATE experiments set location=?,dtstart=?,dtend=?,dtupdate=? where pid=? and dtstart=? and localupdate='Y' ;";
-	private static final String SQL_UPDATE_UNASSIGNED ="UPDATE experiments set location='unassigned',dtupdate=? where pid=? and dtstart=? and localupdate='Y' ;";
+	private static final String SQL_UPDATE_EXP ="UPDATE experiments set location=?,dtstart=?,dtend=?,dtupdate=?, localupdate='Y' where pid=? and dtstart=? ;";
+	private static final String SQL_UPDATE_UNASSIGNED ="UPDATE experiments set location='unassigned',dtupdate=?,localupdate='Y' where pid=? and dtstart=? ;";
 	
 	private static final String SQL_SELECT_bySupport_EXPERIMENTS = "SELECT * FROM experiments where"
 			
@@ -36,6 +36,7 @@ public class ExperimentService {
 	
 	@Autowired
     private JdbcTemplate jdbcTemplate;
+	
 	public Collection<Experiment> getExperiments() {
         return jdbcTemplate.query(
                 SQL_SELECT_ALL_EXPERIMENTS,
@@ -118,8 +119,7 @@ public class ExperimentService {
 			jdbcTemplate.update(
 					SQL_UPDATE_UNASSIGNED, dr,apid,astart);
 		}
-        jdbcTemplate.update(
-        		SQL_UPDATE_EXP, location,sdate,edate,dr,pid,oldsdate);
+        jdbcTemplate.update(SQL_UPDATE_EXP, location,sdate,edate,dr,pid,oldsdate);
     }
  //weekly
 	

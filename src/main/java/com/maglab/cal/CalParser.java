@@ -48,7 +48,7 @@ public class CalParser {
 			+ " experiment_title,proposal_title,proposal_number,dtstart,dtend, "
 			+ " dtstamp, summary, support ," + " dtupdate,pid,calID) " + "values(?,?,?,?,?," + "?,?,?,?,?"
 			+ ",?,?,?" + ",?,?,?)";
-	String delete_SQL="delete from experiments where dtupdate < DATETIME('now', '-1 day') and localupdate is NULL and dtstart>  DATETIME('now', '-10 day') ";
+	String delete_SQL="delete from experiments where dtupdate < DATETIME('now', '-10 hour') and localupdate is NULL and dtstart>  DATETIME('now', '-10 day') ";
 	private static final String CHECK_EXPERIMENT = "SELECT count(*) FROM experiments where calID=? and localupdate IS NOT NULL  ;";
 	SimpleDateFormat dfs = new SimpleDateFormat("yyyyMMdd");
 	SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
@@ -105,25 +105,25 @@ public class CalParser {
 					for (final Object o : calendar.getComponents()) {
 						Component component = (Component) o;
 
-						System.out.println("Component: " + component.getName());
+						//System.out.println("Component: " + component.getName());
 						Experiment ex = new Experiment();
 						for (final Object o1 : component.getProperties()) {
 							Property property = (Property) o1;
 							String name = property.getName();
-							System.out.println("name:"+name);
+							//System.out.println("name:"+name);
 
 							String value = property.getValue();
-							System.out.println("value:"+value);
+							//System.out.println("value:"+value);
 							
 							if (name.equals("DESCRIPTION")) {
 								StringTokenizer st= new StringTokenizer(value, "\n"); 
 								while (st.hasMoreElements()) {
 								String token=st.nextToken();
-								System.out.println("token:"+token);
+								//System.out.println("token:"+token);
 								          if (token.contains("Experiment Title")) {
 									
 									       String tok= token.substring(token.indexOf(":") + 1);
-									       System.out.println("title"+tok);
+									      // System.out.println("title"+tok);
 									       ex.setTitle(tok.trim());
 								           }
 								          if (token.contains("Magnet System")) {
@@ -215,7 +215,7 @@ public class CalParser {
 								while (st.hasMoreElements()) {
 								String token=st.nextToken();
 								
-								System.out.println("token:"+token);
+								//System.out.println("token:"+token);
 								 if (token.contains("Support")) {
 										
 								       String tok= token.substring(token.indexOf(":") + 1);

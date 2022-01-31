@@ -25,7 +25,7 @@ private List<Experiment> experiments = new ArrayList<Experiment>();
     int nav = 1;
 	public ExSortableProvider(List<Experiment> experiments) {
         this.experiments=experiments;
-        setSort("PI", SortOrder.ASCENDING);
+        setSort("DTSTART", SortOrder.DESCENDING);
         nav = getSort().isAscending() ? 1 : -1;
 		}
 	@Override

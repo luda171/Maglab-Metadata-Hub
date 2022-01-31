@@ -1,8 +1,13 @@
 package com.maglab.panel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
@@ -188,6 +193,79 @@ public class HomePanel extends Panel {
 	    }
 	}
 */
+		
+		public static boolean inSameWeek(Date date1, Date date2) {
+		    if (null == date1 || null == date2) {
+		        return false;
+		    }
+
+		    Calendar earlier = Calendar.getInstance();
+		    Calendar later = Calendar.getInstance();
+
+		    if (date1.before(date2)) {
+		        earlier.setTime(date1);
+		        later.setTime(date2);
+		    } else {
+		        earlier.setTime(date2);
+		        later.setTime(date1);
+		    }
+		    if (inSameYear(date1, date2)) {
+		        int week1 = earlier.get(Calendar.WEEK_OF_YEAR);
+		        int week2 = later.get(Calendar.WEEK_OF_YEAR);
+		        if (week1 == week2) {
+		            return true;
+		        }
+		    } else {
+		        int dayOfWeek = earlier.get(Calendar.DAY_OF_WEEK); 
+		        earlier.add(Calendar.DATE, 7 - dayOfWeek);
+		        if (inSameYear(earlier.getTime(), later.getTime())) {
+		            int week1 = earlier.get(Calendar.WEEK_OF_YEAR);
+		            int week2 = later.get(Calendar.WEEK_OF_YEAR);
+		            if (week1 == week2) {
+		                return true;
+		            }
+		        }
+		    }
+		    return false;
+		}
+
+		public static boolean inSameYear(Date date1, Date date2) {
+		    if (null == date1 || null == date2) {
+		        return false;
+		    }
+		    Calendar cal1 = Calendar.getInstance();
+		    cal1.setTime(date1);
+		    int year1 = cal1.get(Calendar.YEAR);
+		    Calendar cal2 = Calendar.getInstance();
+		    cal2.setTime(date2);
+		    int year2 = cal2.get(Calendar.YEAR);
+		    if (year1 == year2)
+		        return true;
+
+		    return false;
+		}
+	
+		public static void   highlight(IModel model,Item cellItem) {
+			Experiment ex = (Experiment) model.getObject();
+            String edate = ex.getDTSTART();
+           // System.out.println("edate"+edate);
+            Date now = new Date();
+           // Date n = new Date(edate);
+           
+    		SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
+    		Date n=null;
+			try {
+				n = sqldf.parse(edate);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (n!=null) {
+            if (inSameWeek(n, now) &&inSameYear(n, now)) {
+            	cellItem.add(AttributeModifier.replace("bgcolor", "lightyellow")); 
+            }}
+		}
+		
 	@SuppressWarnings("serial")
 	private static List<IColumn> newColumnList() {
 		List<IColumn> columns = Generics.newArrayList();
@@ -206,6 +284,7 @@ public class HomePanel extends Panel {
 		columns.add(new TextFilteredPropertyColumn(new Model("Proposal ID"), "Proposal_Number", "Proposal_Number") {
 			// add the LinkPanel to the cell item
 			public void populateItem(Item cellItem, String componentId, IModel model) {
+				//final IModel<String> cssModel = Model.of("bkg-default");
 				cellItem.add(new Link<String>(componentId) {
 
 					@Override
@@ -232,16 +311,32 @@ public class HomePanel extends Panel {
 					public IMarkupFragment getMarkup() {
 						// display the content you like - access the properties of your object
 						Experiment ex = (Experiment) model.getObject();
-
+                        String edate = ex.getDTSTART();
+                       
 						return Markup.of("<div wicket:id='cell'>" + ex.getProposal_Number() + "</div>");
 					}
 				});
-
+				//cssModel.setObject("bkg-green");
+				 //cellItem.add(AttributeModifier.append("\"style\"", "font-style:italic"));
+				 highlight( model,cellItem);
+				 //new AttributeModifier("style", "font-style:italic");
+				 //cellItem.add(AttributeModifier.append("class", "goto")); 
+				 cellItem.add(AttributeModifier.replace("style", "color: blue"));
+				 
+               // if edate
+				//cellItem.add(AttributeModifier.replace("bgcolor", "lightblue")); 
 				// Populate your item here
 			}
 		});
 		
-		columns.add(new PropertyColumn(new Model<String>("Experiment ID"), "PID","PID"));
+		columns.add(new PropertyColumn(new Model<String>("Experiment ID"), "PID","PID") {
+			public void populateItem(Item cellItem, String componentId, IModel model) {
+				super.populateItem(cellItem, componentId, model);
+				 highlight( model,cellItem);
+			}
+			 
+		});
+		
 		columns.add(new TextFilteredPropertyColumn(new Model("PI"), "PI", "PI") {
 			// add the LinkPanel to the cell item
 			public void populateItem(Item cellItem, String componentId, IModel model) {
@@ -256,20 +351,12 @@ public class HomePanel extends Panel {
 						System.out.println("pi" + ex.getPi());
 						parameters1.add("pi", ex.getPi());
 						
-						// this.replace(table);
-						// replace(new HomePanel("homepanel",parameters));
-						// setResponsePage(HomePanel.class,parameters);
-						//List<Experiment> exp = new ArrayList<>();
-						//exp.addAll(service.getExperimentsByPI(ex.getPi()));
 						
 						//ExSortableProvider sp = new ExSortableProvider(exp);
 						HomePanel hp1 = new HomePanel("homepanel", parameters1);
 						System.out.println("pi" + ex.getPi());
 						getPage().replace(hp1);
-						//Page p = getPage();
-						//System.out.println("path" + p.getPath());
-						//this.replace( new DataTable("datatable", newColumnList(), sp, 20));
-						// or do what you want when the link is clicked
+						
 					}
 
 					@Override
@@ -280,19 +367,21 @@ public class HomePanel extends Panel {
 						return Markup.of("<div wicket:id='cell'>" + ex.getPi() + "</div>");
 					}
 				});
-
+				 highlight( model,cellItem);
+				 cellItem.add(AttributeModifier.replace("style", "color: blue"));
 				// Populate your item here
 			}
 		});
 		
 		//columns.add(new PropertyColumn(new Model<String>("Experiment ID"), "ExperimentID", "ExperimentID"));
 
-		columns.add(new PropertyColumn(new Model<String>("Date Start"), "DTSTART","DTSTART"));
-
+		//columns.add(new PropertyColumn(new Model<String>("Date Start"), "DTSTART","DTSTART"));
+		columns.add(new TextFilteredPropertyColumn(new Model<String>("Date Start"), "DTSTART","DTSTART"));
 		//columns.add(new PropertyColumn(new Model<String>("PI"), "PI", "PI"));
 		//columns.add(new PropertyColumn(new Model<String>("Summary"), "SUMMARY"));
 		// columns.add(new PropertyColumn(new Model<String>("LOCATION"), "LOCATION"));
 		columns.add(new PropertyColumn(new Model<String>("Magnet System"), "Magnet_System"));
+		
 		columns.add(new PropertyColumn(new Model<String>("Experiment Title"), "Experiment_Title", "Experiment_Title"));
 		// columns.add(new TextFilteredPropertyColumn<FilterPage.Entity,
 		// FilterPage.Entity, FilterPage.Entity>(Model.of("Start Date"),
@@ -338,7 +427,7 @@ public class HomePanel extends Panel {
 						
 					}
 				});
-
+				// highlight( model,cellItem);
 				// Populate your item here
 			}
 		});
@@ -367,42 +456,9 @@ public class HomePanel extends Panel {
 		                    }
 		                };
 		        cellItem.add(capabilitiesLink);
-				
-		  
-		        
-				
-			/*	cellItem.add(new Link<String>(componentId) {
-
-					@Override
-					public void onClick() {
-						// experiments.addAll(service.getExperimentBySupportName(name));
-						System.out.println("onclick");
-						PageParameters parameters = new PageParameters();
-						Experiment ex = (Experiment) model.getObject();
-						System.out.println("ex" + ex.getId());
-						parameters.add("exid", ex.getId());
-						// this.replace(table);
-						// replace(new HomePanel("homepanel",parameters));
-						// setResponsePage(HomePanel.class,parameters);
-						//ExternalLink("link", new PropertyModel<>(model, "url"));
-						HomePanel hp = new HomePanel("homepanel", parameters);
-						//Page p = getPage();
-						//System.out.println("path" + p.getPath());
-						//getPage().replace(hp);
-						// or do what you want when the link is clicked
-					}
-
-					@Override
-					public IMarkupFragment getMarkup() {
-						// display the content you like - access the properties of your object
-						Experiment ex = (Experiment) model.getObject();
-                        String baseurl="https://users.magnet.fsu.edu:443/Experiments/Display.aspx?ExperimentID='";
-						return Markup.of("<div wicket:id='cell'>" + ex.getId() + "</div>");
-						//return Markup.of("<div wicket:id='link'>" + "<a href='"+baseurl+ex.getId() + "'  </a></div>");
-						//<wicket:fragment id="linkFragment"><a wicket:id="link"></a></wicket:fragment>
-					}
-				});
-*/
+		       // highlight( model,cellItem);
+		       // cellItem.add(AttributeModifier.replace("bgcolor", "lightblue")); 
+		        cellItem.add(AttributeModifier.replace("style", "color: blue"));
 				// Populate your item here
 			}
 		});
@@ -424,22 +480,9 @@ public class HomePanel extends Panel {
 						System.out.println("pi" + ex.getPi());
 						parameters1.add("pid", ex.getPID());
 						parameters1.add("start", ex.getDTSTART());
-						// this.replace(table);
-						// replace(new HomePanel("homepanel",parameters));
-						// setResponsePage(HomePanel.class,parameters);
-						//List<Experiment> exp = new ArrayList<>();
-						//exp.addAll(service.getExperimentsByPI(ex.getPi()));
 						
-						//ExSortableProvider sp = new ExSortableProvider(exp);
-						//HomePanel hp1 = new HomePanel("homepanel", parameters1);
-						//System.out.println("pi" + ex.getPi());
-						//getPage().replace(hp1);
 						 setResponsePage(EditPage.class, parameters1);
-						 //setResponsePage(new EditPage(Book.get(id)));
-						//Page p = getPage();
-						//System.out.println("path" + p.getPath());
-						//this.replace( new DataTable("datatable", newColumnList(), sp, 20));
-						// or do what you want when the link is clicked
+						
 					}
 
 					@Override
@@ -452,7 +495,7 @@ public class HomePanel extends Panel {
 					
 				});
 				
-
+				 cellItem.add(AttributeModifier.replace("style", "color: blue"));
 				// Populate your item here
 			}
 		});

@@ -41,6 +41,8 @@ expire_in  TEXT,
 status TEXT,
 projnode VARCHAR(15),
 expnode VARCHAR(15),
-wikinode VARCHAR(15)
+wikinode VARCHAR(15),
+refresh_token VARCHAR(50)
 )
+#Alter table osf_user_access_log add   refresh_token VARCHAR(50);
 create view dedupexperiments as select experimentID,PI,location,facility,magnetsystem,experiment_title, proposal_title,proposal_number,max(dtstart) as dtstart,dtend,dtstamp,summary,support,dtupdate,pid,calID,localupdate from experiments group by pid;

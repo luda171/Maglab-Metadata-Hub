@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.UUID;
@@ -68,6 +69,10 @@ public class LocationResource {
 	@GET
 	@Path("all")
 	@Produces("application/json")
+	/*
+	 * Gives list of all experiments from start to end in json format
+	 * https://magx.lanl.gov/rest/all?start=20210608&end=20210906
+	 */
 	public Response listALL(@QueryParam("start") String start, @QueryParam("end") String end) {
 		// ExperimentService serv = new ExperimentService();
 		DbUtils utils = new DbUtils();
@@ -115,6 +120,10 @@ public class LocationResource {
 	@GET
 	@Path("now/{id:.*}")
 	@Produces("application/json")
+	/*
+	 * Gives current  experiment for the Cell  in json format
+	 * https://myresearch.institute/rest/now/Cell_4
+	 */
 	public Response listbyNow(@PathParam("id") String cellid) {
 		Date now = new Date();
 		SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
@@ -129,58 +138,10 @@ public class LocationResource {
 
 	}
 
-	@GET
-	@Path("callback")
-
-	public Response listtestbyNow(@QueryParam("code") String inoauthcode, @QueryParam("state") String state) {
-		Date now = new Date();
-		SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
-
-		osfUtils osfu = new osfUtils();
-		System.out.println("was here1 in redirect" + inoauthcode);
-		System.out.println("was here1 in redirect" + state);
-		String dr = sqldf.format(now);
-
-		Entry en= osfu.do_token(inoauthcode,"");
-		String result=(String)en.getValue();
-		// String result=osfu.do_post(tokenurl,POST_PARAMS,"");
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement jsonElement = new JsonParser().parse(result);
-
-		JsonObject root = jsonElement.getAsJsonObject();
-		String ast = root.get("access_token").getAsString();
-		String expire = root.get("expires_in").getAsString();
-		System.out.println(ast);
-
-		osfUtils osf = new osfUtils();
-		String user = osf.create_initial_project_experiment_wiki(ast, state, expire);
-
-		
-		//String json = "{user:\"" + user + "\"}";
-		DbUtils utils = new DbUtils();
-
-		SimpleEntry entry = utils.select_osftokeninfo(state, "exp");
-		if (entry != null) {
-			String expnode = (String) entry.getValue();
-			String url = "https://osf.io/" + expnode + "/";
-			System.out.println(url);
-			// ResponseBuilder r = Response.ok(json);
-			// r.status(200);
-			URI externalUri = null;
-			try {
-				externalUri = new URI(url);
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			// return r.build();
-			return Response.seeOther(externalUri).build();
-		} else {
-			ResponseBuilder r = Response.ok("osf  authorization failed");
-			r.status(403);
-			return r.build();
-		}
-	}
+	/*
+	 * Gives current  experiment for the Cell with specified start date in json format
+	 * https://myresearch.institute/rest/20210608/Cell_4
+	 */
 
 	@Path("{date}/{id:.*}")
 	@GET
@@ -206,9 +167,70 @@ public class LocationResource {
 
 	}
 
+	
+	/*
+	 * osf synchronization methods
+	 */
+	
+	@GET
+	@Path("callback")
+
+	public Response listtestbyNow(@QueryParam("code") String inoauthcode, @QueryParam("state") String state) {
+		Date now = new Date();
+		SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
+
+		osfUtils osfu = new osfUtils();
+		System.out.println("was here1 in redirect" + inoauthcode);
+		System.out.println("was here1 in redirect" + state);
+		String dr = sqldf.format(now);
+
+		Entry en = osfu.do_token(inoauthcode, "");
+		String result = (String) en.getValue();
+		// String result=osfu.do_post(tokenurl,POST_PARAMS,"");
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement jsonElement = new JsonParser().parse(result);
+
+		JsonObject root = jsonElement.getAsJsonObject();
+		String ast = root.get("access_token").getAsString();
+		String expire = root.get("expires_in").getAsString();
+		String rt = root.get("refresh_token").getAsString();
+		System.out.println(ast);
+		System.out.println(rt);
+		osfUtils osf = new osfUtils();
+		String user = osf.create_initial_project_experiment_wiki(ast, state, expire,rt);
+
+		// String json = "{user:\"" + user + "\"}";
+		DbUtils utils = new DbUtils();
+
+		SimpleEntry entry = utils.select_osftokeninfo(state, "exp");
+		if (entry != null) {
+			String expnode = (String) entry.getValue();
+			String url = "https://osf.io/" + expnode + "/";
+			System.out.println(url);
+			// ResponseBuilder r = Response.ok(json);
+			// r.status(200);
+			URI externalUri = null;
+			try {
+				externalUri = new URI(url);
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			// return r.build();
+			return Response.seeOther(externalUri).build();
+		} else {
+			ResponseBuilder r = Response.ok("osf  authorization failed");
+			r.status(403);
+			return r.build();
+		}
+	}
+	
+	
+	
 	@Path("submit")
 	@POST
 	// @Consumes(MediaType.APPLICATION_JSON)
+	//this method was for testing
 	public Response doPost(String msg) {
 		UUID uuid = UUID.randomUUID();
 		String n = uuid.toString();
@@ -231,20 +253,23 @@ public class LocationResource {
 	@Path("updatewiki")
 	@PUT
 	// @Consumes(MediaType.APPLICATION_JSON)
+	/*
+	 * https://magx.lanl.gov/rest/updatewiki?name=p004_113021.md&expid=P19635-E002-PF
+	 */
 	public Response doOSFPUT(String msg, @QueryParam("name") String name, @QueryParam("expid") String expid) {
 		DbUtils utils = new DbUtils();
 		osfUtils osfu = new osfUtils();
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "wiki");
 		String wikinode = (String) entry.getValue();
 		String token = (String) entry.getKey();
-        System.out.println("wikinode"+wikinode);
-        SimpleEntry expentry = utils.select_osftokeninfo(expid, "exp");
-        String expnode = (String) entry.getValue();
-        System.out.println(expnode);
+		System.out.println("wikinode" + wikinode);
+		SimpleEntry expentry = utils.select_osftokeninfo(expid, "exp");
+		String expnode = (String) entry.getValue();
+		System.out.println(expnode);
 		// String wtext=osfu.get_wiki_text(expid, token);
 		String content = osfu.get_wiki_content(expnode, token, wikinode);
 		String cwiki = content + msg;
-System.out.println(cwiki);
+		System.out.println(cwiki);
 		String wikiurl = "https://api.osf.io/v2/wikis/" + wikinode + "/versions/";
 		String wj = osfu.append_json_wiki(wikinode, cwiki);
 		// String result = osfu.do_post(wikiurl, wj, token);
@@ -254,8 +279,10 @@ System.out.println(cwiki);
 		String result = (String) e.getValue();
 		// String result = osfu.do_put_wiki(puturl, cwiki, token);
 		System.out.println(result);
-		if (status==null) status=403;
-		if (result==null) result="hub problem";
+		if (status == null)
+			status = 403;
+		if (result == null)
+			result = "hub problem";
 		/*
 		 * UUID uuid = UUID.randomUUID(); String n=uuid.toString(); File targetFile =
 		 * new File("./test/N"+n+".md"); FileWriter fileWriter; try { fileWriter = new
@@ -272,6 +299,9 @@ System.out.println(cwiki);
 	@Path("updatefile")
 	@PUT
 	// @Consumes(MediaType.APPLICATION_JSON)
+	/*
+	 * https://magx.lanl.gov/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
+	 */
 	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid) {
 		DbUtils utils = new DbUtils();
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
@@ -296,27 +326,20 @@ System.out.println(cwiki);
 
 	@Path("auth")
 	@GET
+	/*  this method initiates a osf form that asks the user to grant authorization for application to sync data. 
+	 *  https://magx.lanl.gov/rest/auth?expid=P19635-E002-PF&station=Cell_4
+	 */
 	public Response doredir(@QueryParam("expid") String expid, @QueryParam("station") String station) {
-		
-		  DbUtils utils = new DbUtils();
-		 /* 
-		 * // SimpleEntry entry = utils.select_osftokeninfo(expid,"user") ; if
-		 * (entry!=null) { String dt = (String) entry.getValue(); String user= (String)
-		 * entry.getKey(); String json = "{user:\""+user+"\"}";
-		 * 
-		 * ResponseBuilder r = Response.ok(json);
-		 * 
-		 * r.status(200); return r.build();
-		 * 
-		 * }
-		 */
-		  utils.insert_auth(expid, "authorizing", station);
-		
+
+		DbUtils utils = new DbUtils();
+		//this we indicate that process of auth started
+		utils.insert_auth(expid, "authorizing", station);
+
 		URI externalUri = null;
 		try {
 			externalUri = new URI(
 					"https://accounts.osf.io/oauth2/authorize?response_type=code&" + "client_id=" + osfUtils.clientID
-							+ "&redirect_uri=" + osfUtils.callbackurl + "&scope=osf.full_write&state=" + expid);
+							+ "&redirect_uri=" + osfUtils.callbackurl + "&scope=osf.full_write&state=" + expid +"&access_type=offline");
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -327,62 +350,109 @@ System.out.println(cwiki);
 
 	@Path("logoff")
 	@GET
+	/*
+	 *  http://<hostname>/rest/logoff?expid=P19635-E002-PF
+	 */
 	public Response dologoff(@QueryParam("expid") String expid, @QueryParam("name") String name) {
 		DbUtils utils = new DbUtils();
-		 osfUtils osf = new osfUtils();
-		 Integer status=204;
-		 String result="";
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "user");
-		if (entry != null) {
-			String token = (String) entry.getValue();
-			System.out.println("token"+token);
-			if (token!=null) {
-			Entry en = osf.do_token(token,"revoke");
-			status = (Integer) en.getKey();
-			System.out.println("revoked:"+status);
-		    result=(String)en.getValue();
-			System.out.println(result);
+		osfUtils osf = new osfUtils();
+		Integer status = 204;
+		String result = "";
+		//SimpleEntry entry = utils.select_osftokeninfo(expid, "user");
+		Map mosf=utils.select_osfinfo(expid);
+		if (mosf.containsKey("access_token")) {
+		//if (entry != null) {
+			//String token = (String) entry.getValue();
+			String token =(String) mosf.get("access_token");
+			System.out.println("token" + token);
+			if (token != null) {
+				Entry en = osf.do_token(token, "revoke");
+				status = (Integer) en.getKey();
+				System.out.println("revoked:" + status);
+				result = (String) en.getValue();
+				System.out.println(result);
+				String dt =(String) mosf.get("dtgranted");
+				// status R -revoke
+				utils.update_token_status(token, expid, dt,"R");
 			}
+		//}
 		}
-		//ResponseBuilder r = Response.ok("osf token revoked");
-		//status 400 -token expired;
-		//204 -token revoked
-		
-		String user="unauthorized";
+		// ResponseBuilder r = Response.ok("osf token revoked");
+		// status 400 -token expired;
+		// 204 -token revoked
+
+		String user = "unauthorized";
 		String json = "{\"user\":\"" + user + "\",\"expid\":\"" + expid + "\"}";
 
 		ResponseBuilder r = Response.ok(json);
 
 		r.status(200);
 		return r.build();
-		
+
 	}
+
 	@Path("status")
 	@GET
+	/*
+	 *  https://<hostname>/rest/status?expid=P19635-E002-PF&station=Cell_4
+	 */
 	public Response docheck(@QueryParam("expid") String expid, @QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
-         osfUtils osf = new osfUtils();
-         String userdefault="unauthorized";
-         String nodeurl=osf.uurl + "me/";
+		osfUtils osf = new osfUtils();
+		String userdefault = "unauthorized";
+		String nodeurl = osf.uurl + "me/";
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "user");
+		Map mosf=utils.select_osfinfo(expid);
+		
 		if (entry != null) {
 			String token = (String) entry.getValue();
+			//String token = mosf.get("acess_token");
 			System.out.println(token);
-			
+
 			String user = (String) entry.getKey();
-			
-			System.out.println("user"+ user);
-			if (user==null) { user=userdefault;}
-			else if (token==null){} else {
-			
-			Entry ep	= osf.get_info(nodeurl, token);
-			int code= (Integer)ep.getKey();
-			System.out.print("checkcode:" +code);
-			Object String;
-			if (code!=200) {
-				System.out.print("checkresponse:"+(String) ep.getValue());
-			    user=userdefault;
-			}
+
+			System.out.println("user" + user);
+			if (user == null) {
+				user = userdefault;
+			} else if (token == null) {
+			} else {
+               //check osf that token is not expired
+				Entry ep = osf.get_info(nodeurl, token);
+				int code = (Integer) ep.getKey();
+				System.out.print("checkcode:" + code);
+				Object String;
+				//user name will be forwarded to aqn panel
+				if (code != 200) {
+					//token expired
+					//get refresh token from db
+					
+					String rftoken=null;
+					if  (mosf.containsKey("refresh_token"))
+					 rftoken=(String) mosf.get("refresh_token");
+					//ask osf to refresh token
+					Entry  e = osf.refresh_token(rftoken);
+					String result = (String) e.getValue();
+					int hcode= (Integer) e.getKey();
+					//token refreshed
+					  if (hcode==200) {
+					   Gson gson = new GsonBuilder().setPrettyPrinting().create();
+					   JsonElement jsonElement = new JsonParser().parse(result);
+
+					    JsonObject root = jsonElement.getAsJsonObject();
+					    String ast = root.get("access_token").getAsString();
+					    String expire = root.get("expires_in").getAsString();
+					    //String rt = root.get("refresh_token").getAsString();
+					    System.out.println("new ast:"+ast);
+					    //System.out.println(rt);
+					    String dt=(String) mosf.get("dtgranted");
+					    utils.update_token(ast, expid, dt,expire);
+					   }else {
+					    //old behavier tell that token expired
+						   //renewal of token  failed
+					    System.out.print("checkresponse:" + (String) ep.getValue());
+					    user = userdefault; }
+					
+				}
 			}
 			String json = "{\"user\":\"" + user + "\",\"expid\":\"" + expid + "\"}";
 

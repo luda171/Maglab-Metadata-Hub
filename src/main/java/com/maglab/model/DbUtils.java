@@ -13,7 +13,9 @@ import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
@@ -294,13 +296,13 @@ public List <Experiment> getbyPid(String  pid) {
 		 return expms;
 		 
 	 }
-	 public void insert_token(String ast,String name,String expire,String state,String proj_id,String exp_id,String wiki_id) {
+	 public void insert_token(String ast,String name,String expire,String state,String proj_id,String exp_id,String wiki_id,String rtoken) {
 		 //{"access_token":"AT-25-YtRAh12kWB3SxUuOxnBYpnuqiRQC5ZR1","token_type":"bearer","expires_in":28800,"scope":"osf.full_write"}
 		 Connection conn =null;
 		 String sql="select * osf_user_access_log where pid=? ";
-		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode)"+
+		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token)"+
 		"values(?,?,?,?,?"+
-				",?,?,?,?)";
+				",?,?,?,?,?)";
 		
 		 //Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		 //JsonElement jsonElement = new JsonParser().parse(json);
@@ -330,6 +332,7 @@ public List <Experiment> getbyPid(String  pid) {
 			    ps.setString(7, proj_id);
 			    ps.setString(8, exp_id);
 			    ps.setString(9, wiki_id);
+			    ps.setString(10, rtoken);
 				numRowsInserted = ps.executeUpdate();
 				System.out.print("inserted:" + numRowsInserted);
 				//}
@@ -351,12 +354,110 @@ public List <Experiment> getbyPid(String  pid) {
 				}
 			}
 		}
+	 public void update_token(String ast,String pid,String dt,String expire) {
+		 
+		 Connection conn =null;
+		 //String sql="select * osf_user_access_log where pid=? ";
+		String isql= "update osf_user_access_log  set access_token=?,dtgranted=?,expire_in=? where pid=? and dtgranted=?; ";
+				
+		
+			int numRowsInserted = 0;
+			
+			PreparedStatement ps = null;
+			//PreparedStatement pcheck = null;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// Date now = new Date();
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String curdate = sdf.format(timestamp);
+			try {
+				 conn = DriverManager.getConnection(dbURL);
+				
+				//if (exp==0) { 
+				ps = conn.prepareStatement(isql);
+				
+				ps.setString(1,ast);
+				
+				ps.setString(2, curdate);
+				ps.setString(3, expire);
+				ps.setString(4,pid);
+				ps.setString(5,dt);
+				
+				numRowsInserted = ps.executeUpdate();
+				System.out.print("updated:" + numRowsInserted);
+				//}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					
+					if (ps!=null) {
+					ps.close();
+					}
+					if (conn!=null) {
+					 conn.close();
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	 
+ public void update_token_status(String ast,String pid,String dt,String status) {
+		 
+		 Connection conn =null;
+		 //String sql="select * osf_user_access_log where pid=? ";
+		 String isql= "update osf_user_access_log  set status=?,dtgranted=? where pid=? and dtgranted=? and ast=?; ";
+						
+			int numRowsInserted = 0;
+			
+			PreparedStatement ps = null;
+			//PreparedStatement pcheck = null;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			// Date now = new Date();
+			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+			String curdate = sdf.format(timestamp);
+			try {
+				 conn = DriverManager.getConnection(dbURL);
+				
+				
+				ps = conn.prepareStatement(isql);
+				
+				ps.setString(1,status);
+				ps.setString(2, curdate);
+				ps.setString(3,pid);
+				ps.setString(4,dt);
+				ps.setString(5,ast);
+				
+				numRowsInserted = ps.executeUpdate();
+				System.out.print("updated:" + numRowsInserted);
+			
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					
+					if (ps!=null) {
+					ps.close();
+					}
+					if (conn!=null) {
+					 conn.close();
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	 
 	 
 	 public void insert_auth(String pid, String name,String station) {
 		 //{"access_token":"AT-25-YtRAh12kWB3SxUuOxnBYpnuqiRQC5ZR1","token_type":"bearer","expires_in":28800,"scope":"osf.full_write"}
 		 Connection conn =null;
 		 //String sql="select * osf_user_access_log where pid=? ";
-		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode)"+
+		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token)"+
 		"values(?,?,?,?,?"+
 				",?,?,?,?)";
 		
@@ -390,7 +491,7 @@ public List <Experiment> getbyPid(String  pid) {
 			    ps.setNull(7, Types.NULL);
 			    ps.setNull(8, Types.NULL);
 			    ps.setNull(9, Types.NULL);
-			  
+			    ps.setNull(10, Types.NULL);
 				numRowsInserted = ps.executeUpdate();
 				System.out.print("inserted:" + numRowsInserted);
 				//}
@@ -416,7 +517,7 @@ public List <Experiment> getbyPid(String  pid) {
 	public  SimpleEntry select_osftokeninfo(String pid,String type) {
 		AbstractMap.SimpleEntry<String, String> entry = null ;
 		                              //(pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode
-		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted from osf_user_access_log where pid=? ";
+		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted,refresh_token from osf_user_access_log where pid=? ";
 		 Connection conn =null;
 		 SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
 		 try {
@@ -437,12 +538,15 @@ public List <Experiment> getbyPid(String  pid) {
 						 String user=rs.getString("osf_name");
 						 System.out.println(user);
 						 String dt=rs.getString("dtgranted");
-						 
+						 String rt=rs.getString("refresh_token").trim();
 						  if (type.equals("wiki")) {
 							  entry=new AbstractMap.SimpleEntry<>(t, id);
 					      }
 						  if (type.equals("exp")) {
 							  entry=new AbstractMap.SimpleEntry<>(t, ex);
+					      }
+						  if (type.equals("refresh")) {
+							  entry=new AbstractMap.SimpleEntry<>(rt, ex);
 					      }
 						  if (type.equals("user")) {
 							  if (user.equals("authorizing"))
@@ -472,6 +576,69 @@ public List <Experiment> getbyPid(String  pid) {
 		 return entry;
 	}
 	
+	public  Map select_osfinfo(String pid) {
+		//AbstractMap.SimpleEntry<String, String> entry = null ;
+		Map m = new HashMap();
+		                              //(pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode
+		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted,refresh_token,DATETIME(dtgranted,expire_in) as exptime  from osf_user_access_log where pid=? ";
+		 Connection conn =null;
+		 SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
+		 try {
+			 conn = DriverManager.getConnection(dbURL);
 
+				if (conn != null) {
+					PreparedStatement ps = null;
+					//Statement statement = conn.createStatement();
+					ps = conn.prepareStatement(mysql);
+					ps.setString(1, pid);
+					 ResultSet rs = ps.executeQuery();
+					 while(rs.next()) {
+						 
+						 String t=rs.getString("access_token").trim();
+						 System.out.println(t);
+						 String id=rs.getString("wikinode");
+						 String ex=rs.getString("expnode");
+						 String user=rs.getString("osf_name");
+						 System.out.println(user);
+						 String dt=rs.getString("dtgranted");
+						 String rt=rs.getString("refresh_token").trim();
+						 String exptime= rs.getString("exptime");
+						 m.put("access_token", t);
+						 m.put("dtgranted", dt);
+						 m.put("wikinode", id);
+						 m.put("expnode", ex);
+						 m.put("pid", pid);
+						 m.put("refresh_token", rt);
+						 m.put("exptime", exptime);
+						
+							  if (user.equals("authorizing"))
+							  {  Date d = sqldf.parse(dt); 
+							      Date now = new Date();
+							      long duration  = now.getTime() - d.getTime();
+							      long timeint = TimeUnit.MILLISECONDS.toMinutes(duration);
+							      if (timeint>10) user=null;
+							  }
+							  
+							  m.put("user", user);
+							 
+					      
+					 }
+					 ps.close();
+				}
+		 }
+		 catch (Exception ex) {
+			 
+		 }
+		 finally {
+			 try {
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 }	
+		 return m;
+	}
+	
 	
 }

@@ -136,6 +136,42 @@ public class osfUtils {
 		return entry;
 	}
 
+	public Entry refresh_token(String rftoken) {
+		HttpPost post =null;
+		AbstractMap.SimpleEntry<Integer, String> entry = null ;
+		 post = new HttpPost(tokenurl);
+		 if (proxy) {
+				post.setConfig(config);
+			}
+		 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		 nameValuePairs.add(new BasicNameValuePair("refresh_token", rftoken));	
+			nameValuePairs.add(new BasicNameValuePair("client_id", clientID));
+			nameValuePairs.add(new BasicNameValuePair("client_secret", clientSecret));
+			
+			nameValuePairs.add(new BasicNameValuePair("grant_type", "refresh_token"));
+			try {
+				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+			post.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+			RequestLine rl = post.getRequestLine();
+			String s = rl.toString();
+			System.out.println(s);
+
+			HttpResponse response = httpClient.execute(post);
+			String result = null;
+			int status = response.getStatusLine().getStatusCode();
+			System.out.println("posttoken:" + status);
+			HttpEntity resentity = response.getEntity();
+			result = EntityUtils.toString(resentity);
+			System.out.println(result);
+			entry = new AbstractMap.SimpleEntry<>(status,result);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return entry;
+	}
 	public Entry do_token(String code,String action) {
 		HttpPost post =null;
 		AbstractMap.SimpleEntry<Integer, String> entry = null ;
@@ -163,6 +199,7 @@ public class osfUtils {
 		
 		nameValuePairs.add(new BasicNameValuePair("grant_type", "authorization_code"));
 		nameValuePairs.add(new BasicNameValuePair("redirect_uri", callbackurl));
+		
 	}
 		else {
 			nameValuePairs.add(new BasicNameValuePair("token", code));
@@ -420,7 +457,7 @@ public class osfUtils {
 
 
 
-	public String create_initial_project_experiment_wiki(String token, String pid, String expire) {
+	public String create_initial_project_experiment_wiki(String token, String pid, String expire,String rtoken) {
 
 		DbUtils dbu = new DbUtils();
 		List exp = dbu.getbyPid(pid);
@@ -545,7 +582,7 @@ public class osfUtils {
 		System.out.println("inserted proj:"+pr_id);
 		System.out.println("inserted exp:"+exp_id);
 		System.out.println("inserted wiki:"+wiki_id);
-		dbu.insert_token(token, osf_name, expire, pid, pr_id, exp_id, wiki_id);
+		dbu.insert_token(token, osf_name, expire, pid, pr_id, exp_id, wiki_id,rtoken);
 		return osf_name;
 	}
 
