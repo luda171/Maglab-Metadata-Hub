@@ -459,7 +459,7 @@ public List <Experiment> getbyPid(String  pid) {
 		 //String sql="select * osf_user_access_log where pid=? ";
 		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token)"+
 		"values(?,?,?,?,?"+
-				",?,?,?,?)";
+				",?,?,?,?,?)";
 		
 		 //Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		 //JsonElement jsonElement = new JsonParser().parse(json);
@@ -602,6 +602,7 @@ public List <Experiment> getbyPid(String  pid) {
 						 System.out.println(user);
 						 String dt=rs.getString("dtgranted");
 						 String rt=rs.getString("refresh_token").trim();
+						 System.out.println(rt);
 						 String exptime= rs.getString("exptime");
 						 m.put("access_token", t);
 						 m.put("dtgranted", dt);

@@ -394,7 +394,7 @@ public class LocationResource {
 	@Path("status")
 	@GET
 	/*
-	 *  https://<hostname>/rest/status?expid=P19635-E002-PF&station=Cell_4
+	 *  https://magx.lanl.gov/rest/status?expid=P19635-E002-PF&station=Cell_4
 	 */
 	public Response docheck(@QueryParam("expid") String expid, @QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
@@ -411,7 +411,7 @@ public class LocationResource {
 
 			String user = (String) entry.getKey();
 
-			System.out.println("user" + user);
+			System.out.println("method:status user" + user);
 			if (user == null) {
 				user = userdefault;
 			} else if (token == null) {
@@ -419,7 +419,7 @@ public class LocationResource {
                //check osf that token is not expired
 				Entry ep = osf.get_info(nodeurl, token);
 				int code = (Integer) ep.getKey();
-				System.out.print("checkcode:" + code);
+				System.out.print("method:checkcode:" + code);
 				Object String;
 				//user name will be forwarded to aqn panel
 				if (code != 200) {
@@ -429,6 +429,7 @@ public class LocationResource {
 					String rftoken=null;
 					if  (mosf.containsKey("refresh_token"))
 					 rftoken=(String) mosf.get("refresh_token");
+					System.out.println("refresh"+rftoken);
 					//ask osf to refresh token
 					Entry  e = osf.refresh_token(rftoken);
 					String result = (String) e.getValue();
