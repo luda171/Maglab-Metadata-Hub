@@ -364,16 +364,30 @@ public class LocationResource {
 		//if (entry != null) {
 			//String token = (String) entry.getValue();
 			String token =(String) mosf.get("access_token");
+			String refresh_token=(String) mosf.get("refresh_token");
 			System.out.println("token" + token);
 			if (token != null) {
 				Entry en = osf.do_token(token, "revoke");
+				
 				status = (Integer) en.getKey();
 				System.out.println("revoked:" + status);
 				result = (String) en.getValue();
 				System.out.println(result);
 				String dt =(String) mosf.get("dtgranted");
 				// status R -revoke
+				
+              Entry ent = osf.do_token(refresh_token, "revoke");
+				
+				status = (Integer) ent.getKey();
+				System.out.println("refresh_revoked:" + status);
+				result = (String) ent.getValue();
+				System.out.println(result);
+				String dt2 =(String) mosf.get("dtgranted");
+				
+				
 				utils.update_token_status(token, expid, dt,"R");
+				
+				
 			}
 		//}
 		}
@@ -421,8 +435,11 @@ public class LocationResource {
 				int code = (Integer) ep.getKey();
 				System.out.print("method:checkcode:" + code);
 				Object String;
+				
+				
 				//user name will be forwarded to aqn panel
-				if (code != 200) {
+				//if (code == 200) {
+					if (code != 200) {
 					//token expired
 					//get refresh token from db
 					
@@ -450,7 +467,7 @@ public class LocationResource {
 					   }else {
 					    //old behavier tell that token expired
 						   //renewal of token  failed
-					    System.out.print("checkresponse:" + (String) ep.getValue());
+					   System.out.print("checkresponse:" + (String) ep.getValue());
 					    user = userdefault; }
 					
 				}
