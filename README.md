@@ -1,7 +1,7 @@
 
 # MagLab Metadata hub
-MagLab Metadata	  hub is a part of the  High Magnetic Field Science Toolset (LANL Copyright No. C20099)
-
+MagLab Metadata	  hub is a part of the  High Magnetic Field Science Toolset (LANL Copyright No. C20099):
+https://github.com/ffb-LANL/High-Magnetic-Field-Science-Toolset
 
 ### What is this repository for? ###
 
