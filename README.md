@@ -13,8 +13,8 @@ The Metadata hub  provides the user interface and  API to sync captured data and
 * Summary of set up. 
 ``` sh
 see linux_install.readme.md for red hat linux example of java,maven and nginx install. 
-JAVA 8
-Maven  to compile
+** JAVA 8
+** Maven  to compile
 
 ```
 * Configuration
@@ -30,8 +30,9 @@ edit src/main/resources/application.properties and config.properties with
 proxy settings.
 ``` 
 * Compile
+``` sh
 mvn clean install
-
+```
 * Database configuration
 ``` sh
 application uses sqlite db
