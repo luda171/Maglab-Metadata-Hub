@@ -45,7 +45,9 @@ sqlite3 pulsefacility.db
 
 * How to run 
 ``` sh
- nohup ./magstart.sh > out2.txt &
+change permissions to executable
+chmod +x start.sh
+nohup ./start.sh > out2.txt &
 ```
 ### CLENT interface  for the list of experiments ### 
 *http://localhost:8085/cal
