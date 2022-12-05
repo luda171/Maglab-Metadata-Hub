@@ -48,13 +48,41 @@ sqlite3 pulsefacility.db
  nohup ./magstart.sh > out2.txt &
 ```
 ### CLENT interface ### 
-*http://localhost/cal
+*http://localhost:8085/cal
 
-### API ###
+## API ##
 
+Base url for API:  http://localhost:8085/rest/
 
-*http://localhost/rest/
+* Gives current  experiment for the station   in json format
+* https://localhost:8085/rest/now/[station]
 
+	
+``` sh
+example
+GET  https://localhost:8085/rest/now/Cell_1
+
+[
+   {
+      "title":"Interfacial Superconductivity in Bi2Te3/FeTe Heterostructures under High Magnetic Fields",
+      "magnet_System":"65 T Multi shot 25 mS (Short Pulse)",
+      "proposal_Number":"P19621",
+      "proposal_Title":"Interfacial Superconductivity in Bi2Te3/FeTe Heterostructures under High Magnetic Fields",
+      "facility":"Pulsed Field",
+      "pi":"Cui-Zu Chang",
+      "dtstart":"2022-12-05",
+      "dtend":"2022-12-10",
+      "dtstamp":"2022-12-05",
+      "location":"Cell_1",
+      "summary":"P19621-E004-PF; PI: Cui-Zu Chang; Support: John Singleton, Laurel Winter",
+      "pid":"P19621-E004-PF",
+      "support":"John Singleton, Laurel Winter",
+      "id":42497,
+      "start":1670223600000
+   }
+]
+  
+	 ```
 
 ### Who do I talk to? ###
 
