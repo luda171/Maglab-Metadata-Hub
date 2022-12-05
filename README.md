@@ -90,7 +90,7 @@ example
 GET  https://localhost:8085/rest/20210608/Cell_4
 ```
 ##OSF sync
-GET
+
 *  Initiates a osf form that asks the user to grant authorization for application to sync data. 
 ``` sh
 GET  https://localhost:8085/rest/auth?expid=P19635-E002-PF&station=Cell_4
