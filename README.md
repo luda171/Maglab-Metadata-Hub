@@ -47,14 +47,14 @@ sqlite3 pulsefacility.db
 ``` sh
  nohup ./magstart.sh > out2.txt &
 ```
-### CLENT interface ### 
+### CLENT interface  for the list of experiments ### 
 *http://localhost:8085/cal
 
 ## API ##
 
 Base url for API:  http://localhost:8085/rest/
 
-* Gives current  experiment for the station   in json format
+* Gives current  experiment for the station   in "application/json" format
 * https://localhost:8085/rest/now/[station]
 
 	
@@ -83,7 +83,14 @@ GET  https://localhost:8085/rest/now/Cell_1
 ]
   
 	 ```
+ * Gives current  experiment for the station with specified start date in json format
+ * https://localhost:8085/rest/[date]/[station]
+ ``` sh
+example
+GET  https://localhost:8085/rest/20210608/Cell_4
+ ```
 
+ 
 ### Who do I talk to? ###
 
 * Lyudmila Balakireva ludab@lanl.gov
