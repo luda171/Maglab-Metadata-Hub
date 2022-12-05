@@ -89,6 +89,20 @@ GET  https://localhost:8085/rest/now/Cell_1
 example
 GET  https://localhost:8085/rest/20210608/Cell_4
 ```
+##OSF sync
+GET
+*  Initiates a osf form that asks the user to grant authorization for application to sync data. 
+``` sh
+GET  https://localhost:8085/rest/auth?expid=P19635-E002-PF&station=Cell_4
+```
+*  Initiates a logoff of user from osf
+``` sh
+GET http://localhost:8085/rest/logoff?expid=P19635-E002-PF
+```
+* Check user authorization status
+``` sh
+GET https://localhost:8085/rest/status?expid=P19635-E002-PF&station=Cell_4
+```
 * Submit wiki update for current  experiment for the station  
 ``` sh
 PUT https://hostname:8085/rest/updatewiki?name=p004_113021.md&expid=P19635-E002-PF
