@@ -47,10 +47,10 @@ sqlite3 pulsefacility.db
 ``` sh
  nohup ./magstart.sh > out2.txt &
 ```
-###CLENT interface ### 
+### CLENT interface ### 
 *http://localhost/cal
 
-###API###
+### API ###
 
 
 *http://localhost/rest/
