@@ -83,14 +83,21 @@ GET  https://localhost:8085/rest/now/Cell_1
 ]
   
 	 ```
- * Gives current  experiment for the station with specified start date in json format
- * https://localhost:8085/rest/[date]/[station]
+* Gives current  experiment for the station with specified start date in json format
+* https://localhost:8085/rest/[date]/[station]
  ``` sh
 example
 GET  https://localhost:8085/rest/20210608/Cell_4
- ```
+```
+* Submit wiki update for current  experiment for the station  
+``` sh
+PUT https://hostname:8085/rest/updatewiki?name=p004_113021.md&expid=P19635-E002-PF
+``` 
+* Submit file stream
+``` sh
+PUT https://hostname:8085/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
+``` 
 
- 
 ### Who do I talk to? ###
 
 * Lyudmila Balakireva ludab@lanl.gov
