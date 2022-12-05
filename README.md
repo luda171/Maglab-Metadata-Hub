@@ -10,12 +10,11 @@ The Metadata hub  provides the user interface and  API to sync captured data and
 
 ### How do I get set up? ###
 
-* Summary of set up
+* Summary of set up see linux.readme for red hat linux example of java,maven and nginx install. 
 ``` sh
 JAVA 8
-with  Maven installed  to compile
+Maven  to compile
 
-mvn clean install
 ```
 * Configuration
 ``` sh
@@ -29,7 +28,8 @@ cal.facility=Pulsed Field
 edit src/main/resources/application.properties and config.properties with
 proxy settings.
 ``` 
-
+* Compile
+mvn clean install
 
 * Database configuration
 ``` sh
