@@ -13,17 +13,36 @@ sudo mv apache-maven-3.8.5 /opt/
 ```
 ## Step 3: Setting JAVA_HOME and maven home and Path Environment Variables
 ``` sh
-emacs .bashrc
+emacs .bash_profile
 add to profile your variables.
 export M2_HOME='/opt/apache-maven-3.8.5'
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.352.b08-2.el8_7.x86_64/jre/
 PATH="$M2_HOME/bin:"$JAVA_HOME/bin:$PATH"                                                                                                                                                                                                                           
 export PATH  
 ```
-You can relaunch the terminal or execute source .bashrc command to apply the configuration changes.
+You can relaunch the terminal or execute source .bash_profile command to apply the configuration changes.
 Verify the Maven installation
 ``` sh
 mvn -version
+```
+if you have to work with proxy
+add settings.xml file at user directory  ~/.m2 directory with content
+
+``` sh
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <proxies>
+    <proxy>
+      <id>myproxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy1.lanl.gov</host>
+      <port>8080</port>
+    </proxy>
+  </proxies>
+</settings>
 ```
 ## Step 4:  Create directory for project
 ``` sh
@@ -43,3 +62,4 @@ Adjust hostname, directories to your own
 sudo service nginx start
 ```
 ## Folow readme to config application 
+
