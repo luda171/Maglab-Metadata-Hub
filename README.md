@@ -10,8 +10,9 @@ The Metadata hub  provides the user interface and  API to sync captured data and
 
 ### How do I get set up? ###
 
-* Summary of set up see linux.readme for red hat linux example of java,maven and nginx install. 
+* Summary of set up. 
 ``` sh
+see linux_install.readme.md for red hat linux example of java,maven and nginx install. 
 JAVA 8
 Maven  to compile
 
