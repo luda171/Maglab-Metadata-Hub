@@ -17,6 +17,13 @@ see linux_install.readme.md for red hat linux example of java,maven and nginx in
 ** Maven  to compile
 
 ```
+* Register your application with OSF
+``` sh
+login to OSF
+go to Developer APPS tab and click "Create Developer APP button"
+
+```
+
 * Configuration
 ``` sh
 edit src/main/resources/config.properties with your custom parameters
