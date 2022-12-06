@@ -57,7 +57,7 @@ git clone https://github.com/luda171/Maglab-Metadata-Hub/
 ## Step 5 Nginx config
 ``` sh
 copy /data/web/Maglab-Metadata-Hub/magx.conf to /etc/nginx/conf.d
-Adjust hostname, directories to your own
+Adjust server_name, directories to your own
 cp /data/web/Maglab-Metadata-Hub/magx.conf /etc/nginx/conf.d
 ```
 ### start nginx
@@ -67,7 +67,7 @@ sudo service nginx start
 ## Folow readme to config application 
 ## Security settings new server
 ``` sh
-if server has selinux enabled
+if server has selinux enabled, 
 
 > getenforce
 > Enforcing
@@ -84,8 +84,8 @@ Memory protection checking:     actual (secure)
 Max kernel policy version:      33
 
 > sudo setsebool -P httpd_can_network_connect true
+You can also open the required ports for a service by using the –add-service option:
 
-firewall:
 > sudo firewall-cmd --zone=public --add-service=http
 > sudo firewall-cmd --zone=public --add-service=https
 > sudo firewall-cmd --list-all
