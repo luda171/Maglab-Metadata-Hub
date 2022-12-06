@@ -55,11 +55,38 @@ cd web
 git clone https://github.com/luda171/Maglab-Metadata-Hub/
 ```
 ## Step 5 Nginx config
+``` sh
 copy /data/web/Maglab-Metadata-Hub/magx.conf to /etc/nginx/conf.d
 Adjust hostname, directories to your own
+cp /data/web/Maglab-Metadata-Hub/magx.conf /etc/nginx/conf.d
+```
 ### start nginx
 ``` sh
 sudo service nginx start
 ```
 ## Folow readme to config application 
+## Security settings new server
+``` sh
+if server has selinux enabled
 
+> getenforce
+> Enforcing
+> sestatus
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
+
+> sudo setsebool -P httpd_can_network_connect true
+
+firewall:
+> sudo firewall-cmd --zone=public --add-service=http
+> sudo firewall-cmd --zone=public --add-service=https
+> sudo firewall-cmd --list-all
+```
