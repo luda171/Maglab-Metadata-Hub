@@ -225,7 +225,8 @@ public class LocationResource {
 		}
 	}
 	
-	
+
+//	 https://api.test.osf.io/v2/users/{user_id}/addons/
 	
 	@Path("submit")
 	@POST
@@ -249,7 +250,16 @@ public class LocationResource {
 		ResponseBuilder r = Response.status(201);
 		return r.build();
 	}
-
+   
+	@GET 
+	@Path("addons")
+	public Response checkAddons() {
+		// "https://api.osf.io/v2/addons/"
+//		 https://api.test.osf.io/v2/users/{user_id}/addons/
+		return null;
+	}
+			
+	
 	@Path("updatewiki")
 	@PUT
 	// @Consumes(MediaType.APPLICATION_JSON)

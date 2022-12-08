@@ -408,7 +408,7 @@ public List <Experiment> getbyPid(String  pid) {
 		 
 		 Connection conn =null;
 		 //String sql="select * osf_user_access_log where pid=? ";
-		 String isql= "update osf_user_access_log  set status=?,dtgranted=? where pid=? and dtgranted=? and ast=?; ";
+		 String isql= "update osf_user_access_log  set status=?,dtgranted=? where pid=? and dtgranted=? and access_token=?; ";
 						
 			int numRowsInserted = 0;
 			

@@ -25,7 +25,7 @@ public class ExperimentService {
 	private static final String SQL_SELECT_EXPERIMENT_byStartPID = "SELECT * FROM experiments where pid=? and dtstart= ? ;";
 	private static final String SQL_SELECT_EXPERIMENT_Overlap="select * from experiments where location=? and dtstart<=? and dtend >=? ;";
 	
-	private static final String SQL_UPDATE_EXP ="UPDATE experiments set location=?,dtstart=?,dtend=?,dtupdate=?, localupdate='Y' where pid=? and dtstart=? ;";
+	private static final String SQL_UPDATE_EXP ="UPDATE experiments set location=?,dtstart=?,dtend=?,dtupdate=?, support=?,localupdate='Y' where pid=? and dtstart=? ;";
 	private static final String SQL_UPDATE_UNASSIGNED ="UPDATE experiments set location='unassigned',dtupdate=?,localupdate='Y' where pid=? and dtstart=? ;";
 	
 	private static final String SQL_SELECT_bySupport_EXPERIMENTS = "SELECT * FROM experiments where"
@@ -99,7 +99,7 @@ public class ExperimentService {
                 new ExperimentMapper()
         );
     }
-	public void updateExp(String pid, String oldsdate, String location,String sdate,String edate) {
+	public void updateExp(String pid, String oldsdate, String location,String sdate,String edate,String support) {
 		Date now = new Date();
 		SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
 		 DbUtils utils = new DbUtils();
@@ -119,7 +119,7 @@ public class ExperimentService {
 			jdbcTemplate.update(
 					SQL_UPDATE_UNASSIGNED, dr,apid,astart);
 		}
-        jdbcTemplate.update(SQL_UPDATE_EXP, location,sdate,edate,dr,pid,oldsdate);
+        jdbcTemplate.update(SQL_UPDATE_EXP, location,sdate,edate,dr,support,pid,oldsdate);
     }
  //weekly
 	

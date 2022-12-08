@@ -18,6 +18,7 @@ public class EditForm extends Form<EditForm> {
     private FormComponent dstart;
     private FormComponent finish;
     private FormComponent sum;
+    private FormComponent sup;
     String oldpid;
     String oldstart;
     @SpringBean
@@ -36,12 +37,17 @@ public class EditForm extends Form<EditForm> {
         System.out.println(old.getDTEND());
         System.out.println(old.getLOCATION());
         System.out.println(old.getSummary());
+        System.out.println(old.getSupport());
       // String sum = old.getSummary();
        // this.userId = userId;
         //User oldUser = service.getUserById(userId);
        sum = new TextField<>(
                "sum",
                new PropertyModel<>(old, "SUMMARY")
+       );
+       sup = new TextField<>(
+               "sup",
+               new PropertyModel<>(old, "Support")
        );
         finish = new TextField<>(
                 "finish",
@@ -60,6 +66,8 @@ public class EditForm extends Form<EditForm> {
         add(finish);
         add(dstart);
         add(station);
+        add(sup);
+        
         //add(new HomeLink("cancelLink"));
         
         BookmarkablePageLink pl = new BookmarkablePageLink("cancelLink", MyHomePage.class);
@@ -77,7 +85,7 @@ public class EditForm extends Form<EditForm> {
 	 @Override
 	    protected void onSubmit() {
 	     
-	       serv.updateExp(oldpid, oldstart, station.getInput(), dstart.getInput(),finish.getInput());
+	       serv.updateExp(oldpid, oldstart, station.getInput(), dstart.getInput(),finish.getInput(),sup.getInput());
 	       setResponsePage(MyHomePage.class); 
 	    }
 
