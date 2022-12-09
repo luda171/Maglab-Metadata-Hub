@@ -26,9 +26,9 @@ go to Developer APPS tab and click "Create Developer APP button"
 ![alt text](https://github.com/luda171/Maglab-Metadata-Hub/blob/master/img/reg_osf0.png?raw=true)
 ``` sh
 and enter your server information, see example.
+```
 ![alt text](https://github.com/luda171/Maglab-Metadata-Hub/blob/master/img/reg_osf1.png?raw=true)
 
-```
 * Configuration
 ``` sh
 edit src/main/resources/config.properties with your custom parameters
