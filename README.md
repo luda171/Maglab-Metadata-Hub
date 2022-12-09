@@ -23,6 +23,7 @@ login to OSF
 go to Developer APPS tab and click "Create Developer APP button"
 
 ```
+![alt text](https://github.com/luda171/Maglab-Metadata-Hub/blob/master/img/reg_osf0.png?raw=true)
 
 * Configuration
 ``` sh
