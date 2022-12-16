@@ -86,7 +86,32 @@ Max kernel policy version:      33
 > sudo setsebool -P httpd_can_network_connect true
 You can also open the required ports for a service by using the –add-service option:
 
-> sudo firewall-cmd --zone=public --add-service=http
-> sudo firewall-cmd --zone=public --add-service=https
+> sudo firewall-cmd --zone=public  --permanent --add-service=http
+> sudo firewall-cmd --zone=public  --permanent --add-service=https
 > sudo firewall-cmd --list-all
 ```
+### Configuring automatic start up if server rebooted
+``` sh
+ add nginx to start after reboot 
+ > sudo chkconfig nginx on
+```
+add maghub service 
+``` sh
+create file as root user
+emacs  /etc/systemd/system/maghub.service
+with following content (adjust username and directories:
+Description=Maghub Server Service
+After=network.target
+
+[Service]
+User=ludab
+WorkingDirectory=/data/web/Maglab-Metadata-Hub/
+ExecStart=/bin/bash -c "/data/web/Maglab-Metadata-Hub/start.sh > /data/web/Maglab-Metadata-Hub/logs/maghub.log"
+ExecStop=/bin/kill -15 $MAINPID
+Restart=always
+
+```
+append: option for loging  has been introduced in systemd version 240.  Check  man systemd.exec if you have it.  Otherwise use other Syslog methods.
+
+
+
