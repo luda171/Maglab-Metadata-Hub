@@ -60,6 +60,7 @@ sqlite3 pulsefacility.db
 change permissions to executable
 chmod +x start.sh
 nohup ./start.sh > out2.txt &
+see  linux_install.readme.md how to config application to run as service on linux.
 ```
 ### CLENT interface  for the list of experiments ### 
 *http://localhost:8085/cal
