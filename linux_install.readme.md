@@ -95,11 +95,12 @@ You can also open the required ports for a service by using the –add-service o
  add nginx to start after reboot 
  > sudo chkconfig nginx on
 ```
-add maghub service 
+add maghub service ( create logs/ directory at /data/web/Maglab-Metadata-Hub or other location)
 ``` sh
 create file as root user
 emacs  /etc/systemd/system/maghub.service
-with following content (adjust username and directories:
+with following content (adjust username and directories):
+
 Description=Maghub Server Service
 After=network.target
 
@@ -111,7 +112,19 @@ ExecStop=/bin/kill -15 $MAINPID
 Restart=always
 
 ```
-append: option for loging  has been introduced in systemd version 240.  Check  man systemd.exec if you have it.  Otherwise use other Syslog methods.
+change permissions of ./start.sh , ./tmp, ./logs
+chmod 777 start.sh
+ 
+ check that service runs correctly
+``` sh
+ > sudo service maghub start 
+ > sudo service maghub stop
+> sudo systemctl status maghub.service
+ 
+then enable service to start after reboot
+> sudo systemctl enable maghub.service
+```
+ 
 
 
 
