@@ -194,8 +194,8 @@ public class LocationResource {
 		String ast = root.get("access_token").getAsString();
 		String expire = root.get("expires_in").getAsString();
 		String rt = root.get("refresh_token").getAsString();
-		System.out.println(ast);
-		System.out.println(rt);
+		System.out.println("ast"+ast);
+		System.out.println("rt"+rt);
 		osfUtils osf = new osfUtils();
 		String user = osf.create_initial_project_experiment_wiki(ast, state, expire,rt);
 
@@ -253,10 +253,39 @@ public class LocationResource {
    
 	@GET 
 	@Path("addons")
-	public Response checkAddons() {
-		// "https://api.osf.io/v2/addons/"
-//		 https://api.test.osf.io/v2/users/{user_id}/addons/
-		return null;
+	public Response checkAddons( @QueryParam("expid") String expid, @QueryParam("addonid") String addid) {
+		DbUtils utils = new DbUtils();
+		String addonurl= "https://api.osf.io/v2/addons/";
+		osfUtils osfu = new osfUtils();		
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
+		String expnode = (String) entry.getValue();
+		String token = (String) entry.getKey();
+		System.out.println("expnode" + expnode);
+		Entry er = osfu.get_info(osfu.uurl, token);
+		String r = (String) er.getValue();
+		System.out.println("r" + r);
+		JsonElement jsonEl = new JsonParser().parse(r);
+
+		JsonObject user = jsonEl.getAsJsonObject();
+
+		JsonObject data = user.get("data").getAsJsonObject();
+
+		String userid = data.get("id").getAsString();
+		System.out.println("userid" + userid);
+		//String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
+		String nodeaddonurl = "https://api.test.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
+		Entry e=osfu.get_info(nodeaddonurl, token);
+		Integer status = (Integer) e.getKey();
+		String result = (String) e.getValue();
+		System.out.println(result);
+		if (status == null)
+			status = 403;
+		if (result == null)
+			result = "hub problem";
+       
+		
+		ResponseBuilder rr = Response.status(status).entity(result);
+		return rr.build();
 	}
 			
 	
