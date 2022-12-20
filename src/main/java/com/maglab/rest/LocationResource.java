@@ -273,13 +273,17 @@ public class LocationResource {
 
 		String userid = data.get("id").getAsString();
 		System.out.println("userid" + userid);
-		String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
-		Entry ee=osfu.get_info(ua, token);
-		Integer status0 = (Integer) ee.getKey();
-		String resulte = (String) ee.getValue();
-		System.out.println(resulte);
-		String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
-		Entry e=osfu.get_info(nodeaddonurl, token);
+		//String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
+		//Entry ee=osfu.get_info(ua, token);
+		//Integer status0 = (Integer) ee.getKey();
+		//String resulte = (String) ee.getValue();
+		//System.out.println(resulte);
+		                       //http://api.osf.io/v2/nodes/gaz5n/addons/box/
+		
+
+		String nodeanurl="https://api.test.osf.io/v2/nodes/"+expnode+"/addons/";
+		//String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
+		Entry e=osfu.get_info(nodeanurl, token);
 		Integer status = (Integer) e.getKey();
 		String result = (String) e.getValue();
 		System.out.println(result);
