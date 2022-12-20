@@ -281,7 +281,8 @@ public class LocationResource {
 		                       //http://api.osf.io/v2/nodes/gaz5n/addons/box/
 		
 
-		String nodeanurl="https://api.test.osf.io/v2/nodes/"+expnode+"/addons/";
+		//String nodeanurl="https://api.test.osf.io/v2/nodes/"+expnode+"/addons/";
+		String nodeanurl="https://api.osf.io/v2/nodes/"+expnode+"/addons/";
 		//String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
 		Entry e=osfu.get_info(nodeanurl, token);
 		Integer status = (Integer) e.getKey();
