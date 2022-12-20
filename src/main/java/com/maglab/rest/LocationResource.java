@@ -255,13 +255,14 @@ public class LocationResource {
 	@Path("addons")
 	public Response checkAddons( @QueryParam("expid") String expid, @QueryParam("addonid") String addid) {
 		DbUtils utils = new DbUtils();
-		String addonurl= "https://api.osf.io/v2/addons/";
+		//String addonurl= "https://api.osf.io/v2/addons/";
 		osfUtils osfu = new osfUtils();		
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		System.out.println("expnode" + expnode);
-		Entry er = osfu.get_info(osfu.uurl, token);
+		String userurl=osfu.uurl+"me/";
+		Entry er = osfu.get_info(userurl, token);
 		String r = (String) er.getValue();
 		System.out.println("r" + r);
 		JsonElement jsonEl = new JsonParser().parse(r);
