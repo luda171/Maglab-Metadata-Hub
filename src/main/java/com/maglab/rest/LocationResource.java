@@ -265,14 +265,14 @@ public class LocationResource {
 		Entry er = osfu.get_info(userurl, token);
 		String r = (String) er.getValue();
 		System.out.println("r" + r);
-		JsonElement jsonEl = new JsonParser().parse(r);
+		//JsonElement jsonEl = new JsonParser().parse(r);
 
-		JsonObject user = jsonEl.getAsJsonObject();
+		//JsonObject user = jsonEl.getAsJsonObject();
 
-		JsonObject data = user.get("data").getAsJsonObject();
+		//JsonObject data = user.get("data").getAsJsonObject();
 
-		String userid = data.get("id").getAsString();
-		System.out.println("userid" + userid);
+		//String userid = data.get("id").getAsString();
+		//System.out.println("userid" + userid);
 		//String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
 		//Entry ee=osfu.get_info(ua, token);
 		//Integer status0 = (Integer) ee.getKey();
