@@ -273,8 +273,12 @@ public class LocationResource {
 
 		String userid = data.get("id").getAsString();
 		System.out.println("userid" + userid);
-		//String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
-		String nodeaddonurl = "https://api.test.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
+		String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
+		Entry ee=osfu.get_info(ua, token);
+		Integer status0 = (Integer) ee.getKey();
+		String resulte = (String) ee.getValue();
+		System.out.println(resulte);
+		String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
 		Entry e=osfu.get_info(nodeaddonurl, token);
 		Integer status = (Integer) e.getKey();
 		String result = (String) e.getValue();
