@@ -253,14 +253,16 @@ public class LocationResource {
    
 	@GET 
 	@Path("addons")
-	public Response checkAddons( @QueryParam("expid") String expid, @QueryParam("addonid") String addid) {
+	public Response checkAddons( @QueryParam("expid") String expid, @QueryParam("addonid") String addid,@QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		//String addonurl= "https://api.osf.io/v2/addons/";
-		osfUtils osfu = new osfUtils();		
+		osfUtils osfu = new osfUtils();	
+		this.docheck(expid,  station);
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		System.out.println("expnode" + expnode);
+		System.out.println("token"+token);
 		String userurl=osfu.uurl+"me/";
 		Entry er = osfu.get_info(userurl, token);
 		String r = (String) er.getValue();
