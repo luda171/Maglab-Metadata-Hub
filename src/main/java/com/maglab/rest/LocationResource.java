@@ -357,23 +357,30 @@ public class LocationResource {
 	 */
 	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath) {
 		DbUtils utils = new DbUtils();
+		String fpath=""; 
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		osfUtils osfu = new osfUtils();
 		if (folderpath!=null){
 		String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
-		
+		 
 		Entry f = osfu.do_put_folder(putfolderurl,  token);
 		if (f != null) {
 			String fresult = (String) f.getValue();
 			Integer fcode = (Integer) f.getKey();
-			System.out.println(fresult);
-			System.out.println("osf status: " + fcode);
-			
+			System.out.println("folder:"+fresult);
+			System.out.println("osf folder status: " + fcode);
+			JsonElement jsonEl = new JsonParser().parse(fresult);
+			JsonObject user = jsonEl.getAsJsonObject();
+
+			JsonObject data = user.get("data").getAsJsonObject();
+
+			fpath = data.get("path").getAsString();
+			System.out.println("folder path:"+fpath);
 		}
 		}
-		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=file&name="
+		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/"+fpath+"?kind=file&name="
 				+ name;
 		
 		ResponseBuilder r;
