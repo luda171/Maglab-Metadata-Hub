@@ -365,6 +365,13 @@ public class LocationResource {
 		if (folderpath!=null){
 		String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
 		 
+		String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/osfstorage/?filter[kind]=folder";
+		Entry fr = osfu. get_info(checkurl, token);
+		String frresult = (String) fr.getValue();
+		System.out.println("folderlist:"+frresult);
+		Integer frcode = (Integer) fr.getKey();
+		System.out.println(frcode);
+		System.out.println("osf folder status: " + frcode);
 		Entry f = osfu.do_put_folder(putfolderurl,  token);
 		if (f != null) {
 			String fresult = (String) f.getValue();
@@ -375,12 +382,18 @@ public class LocationResource {
 			JsonObject user = jsonEl.getAsJsonObject();
 
 			JsonObject data = user.get("data").getAsJsonObject();
-
-			fpath = data.get("path").getAsString();
+            if (data!=null) {
+			fpath = data.get("id").getAsString();
 			System.out.println("folder path:"+fpath);
+            }
+            {System.out.println ("folder already there");}
 		}
 		}
-		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/"+fpath+"?kind=file&name="
+		
+		String prp ="osfstorage/";
+		if (fpath!=null) { prp = fpath; }
+				
+		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+prp+"?kind=file&name="
 				+ name;
 		
 		ResponseBuilder r;
