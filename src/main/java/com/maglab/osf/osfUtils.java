@@ -371,6 +371,49 @@ public class osfUtils {
 
 	}
 
+	public Entry do_put_folder(String posturl, String token) {
+		HttpPut post = new HttpPut(posturl);
+		AbstractMap.SimpleEntry<Integer, String> entry = null;
+
+		String result = null;
+		if (fproxy) {
+			post.setConfig(config);
+		}
+		post.addHeader("Content-Type", "application/octet-stream");
+		post.addHeader("Authorization", "Bearer " + token);
+
+		// post.addHeader("Content-Type", "text/plain ; charset=UTF-8");
+		// post.addHeader("Content-Type","text/markdown; charset=UTF-8");
+		InputStreamEntity entity;
+
+		try {
+			// entity = new StringEntity(body);
+		//	entity = new InputStreamEntity(in);
+		//	post.setEntity(entity);
+			HttpResponse response = httpClient.execute(post);
+
+			int code = response.getStatusLine().getStatusCode();
+			HttpEntity resentity = response.getEntity();
+			result = EntityUtils.toString(resentity);
+			System.out.println(result);
+			entry = new AbstractMap.SimpleEntry<>(code, result);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			post.releaseConnection();
+		}
+
+		return entry;
+
+	}
+	
 	public String get_userprojects_next(String nodeurl, String token, String proposal, String field) {
 		String proj_id = null;
 		Entry ep = get_info(nodeurl, token);

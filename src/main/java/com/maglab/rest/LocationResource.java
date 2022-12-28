@@ -285,6 +285,7 @@ public class LocationResource {
 
 		//String nodeanurl="https://api.test.osf.io/v2/nodes/"+expnode+"/addons/";
 		String nodeanurl="https://api.osf.io/v2/nodes/"+expnode+"/addons/";
+		//https://api.osf.io/v2/addons/
 		System.out.println (nodeanurl);
 		//String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
 		Entry e=osfu.get_info(nodeanurl, token);
@@ -354,14 +355,27 @@ public class LocationResource {
 	/*
 	 * https://magx.lanl.gov/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
 	 */
-	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid) {
+	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath) {
 		DbUtils utils = new DbUtils();
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
+		osfUtils osfu = new osfUtils();
+		if (folderpath!=null){
+		String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
+		
+		Entry f = osfu.do_put_folder(putfolderurl,  token);
+		if (f != null) {
+			String fresult = (String) f.getValue();
+			Integer fcode = (Integer) f.getKey();
+			System.out.println(fresult);
+			System.out.println("osf status: " + fcode);
+			
+		}
+		}
 		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=file&name="
 				+ name;
-		osfUtils osfu = new osfUtils();
+		
 		ResponseBuilder r;
 		Entry en = (SimpleEntry) osfu.do_put_file(puturl, in, token);
 		if (en != null) {
