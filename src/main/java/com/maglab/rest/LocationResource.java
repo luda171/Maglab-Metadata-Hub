@@ -362,10 +362,10 @@ public class LocationResource {
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		osfUtils osfu = new osfUtils();
-		String p = osfu.check_providers(  expnode, token);
-		if (provider==null) {
-			  provider=p;
-			}
+		//String p = osfu.check_providers(  expnode, token);
+		//if (provider==null) {
+		//	  provider=p;
+		//	}
 		if (provider==null) {
 		  provider="osfstorage";
 		}
