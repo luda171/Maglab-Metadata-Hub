@@ -116,6 +116,7 @@ public class osfUtils {
 		JsonElement jsonEl2 = new JsonParser().parse(result);
 		JsonObject obj = jsonEl2.getAsJsonObject();
 		JsonArray jarray = obj.getAsJsonArray("data");
+		if (jarray!=null) {
 		for (JsonElement pa : jarray) {
 			JsonObject pObj = pa.getAsJsonObject();
 		JsonElement pname = pObj.get("attributes").getAsJsonObject().get("id");
@@ -123,6 +124,7 @@ public class osfUtils {
 		System.out.println(fname);
 		if (!fname.equals(p)){
 			p = fname;
+		}
 		}
 		}
 		return p;
