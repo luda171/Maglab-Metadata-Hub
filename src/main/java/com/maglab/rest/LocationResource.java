@@ -355,47 +355,24 @@ public class LocationResource {
 	/*
 	 * https://magx.lanl.gov/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
 	 */
-	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath) {
+	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath,@QueryParam("addon") String provider) {
 		DbUtils utils = new DbUtils();
 		String fpath=""; 
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		osfUtils osfu = new osfUtils();
+		if (provider==null) {
+		  provider="osfstorage";
+		}
+		String prp="";
+		//get folder id 
 		if (folderpath!=null){
-		String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
-		 
-		String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/osfstorage/?filter[kind]=folder";
-		Entry fr = osfu. get_info(checkurl, token);
-		String frresult = (String) fr.getValue();
-		System.out.println("folderlist:"+frresult);
-		Integer frcode = (Integer) fr.getKey();
-		System.out.println(frcode);
-		System.out.println("osf folder status: " + frcode);
-		Entry f = osfu.do_put_folder(putfolderurl,  token);
-		if (f != null) {
-			String fresult = (String) f.getValue();
-			Integer fcode = (Integer) f.getKey();
-			System.out.println("folder:"+fresult);
-			System.out.println("osf folder status: " + fcode);
-			JsonElement jsonEl = new JsonParser().parse(fresult);
-			JsonObject user = jsonEl.getAsJsonObject();
-
-			JsonObject data = user.get("data").getAsJsonObject();
-            if (data!=null) {
-			fpath = data.get("id").getAsString();
-			System.out.println("folder path:"+fpath);
-            }
-            {System.out.println ("folder already there");}
+		//String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
+			prp=osfu.check_folders(  expnode, token,folderpath, provider);
 		}
-		}
-		
-		String prp ="osfstorage/";
-		if (fpath!=null) { prp = fpath; }
-				
-		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+prp+"?kind=file&name="
-				+ name;
-		
+		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+prp+"?kind=file&name="	+ name;
+		System.out.println(puturl);
 		ResponseBuilder r;
 		Entry en = (SimpleEntry) osfu.do_put_file(puturl, in, token);
 		if (en != null) {

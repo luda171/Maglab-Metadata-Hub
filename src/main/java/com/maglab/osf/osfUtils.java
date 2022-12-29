@@ -102,6 +102,55 @@ public class osfUtils {
 	// boolean proxy = false;
 	String osf_name = "";
 
+    public String check_folders( String expnode, String token, String folderpath,String provider) {
+	String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+provider+"/?kind=folder&name=" +folderpath;
+	String fid="";
+	 //get list of folders
+	String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[kind]=folder";
+	Entry fr =  get_info(checkurl, token);
+	String result = (String) fr.getValue();
+	System.out.println("folderlist:"+result);
+	Integer frcode = (Integer) fr.getKey();
+	System.out.println(frcode);
+	System.out.println("osf folder status: " + frcode);
+	JsonElement jsonEl2 = new JsonParser().parse(result);
+	JsonObject obj = jsonEl2.getAsJsonObject();
+	JsonArray jarray = obj.getAsJsonArray("data");
+
+	for (JsonElement pa : jarray) {
+		JsonObject pObj = pa.getAsJsonObject();
+	JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("name");
+	String fname = (foldername instanceof JsonNull) ? "" : foldername.getAsString();
+	if (fname.equals(folderpath)) {
+		JsonElement foldpath = pObj.get("attributes").getAsJsonObject().get("path");
+		 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
+		 System.out.println("folder path existed:"+fid);
+	}
+	}
+//if folder not exists create it 
+	if ( fid.equals("")) {
+	Entry f = do_put_folder(putfolderurl,  token);
+	if (f != null) {
+		String fresult = (String) f.getValue();
+		Integer fcode = (Integer) f.getKey();
+		System.out.println("folder:"+fresult);
+		System.out.println("osf folder status: " + fcode);
+		JsonElement jsonEl = new JsonParser().parse(fresult);
+		JsonObject user = jsonEl.getAsJsonObject();
+
+		JsonObject data = user.get("data").getAsJsonObject();
+        if (data!=null) {
+        	JsonElement foldpath = data.get("attributes").getAsJsonObject().get("path");
+   		 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
+		
+		System.out.println("folder path created:"+fid);
+        }
+        
+	}
+	}
+	String fp=provider+fid;
+	return fp;
+}
 	public Entry get_info(String geturl, String token) {
 		HttpGet get = new HttpGet(geturl);
 		String result = null;
