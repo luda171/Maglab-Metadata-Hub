@@ -101,6 +101,32 @@ public class osfUtils {
 	boolean fproxy = Boolean.parseBoolean(f_proxy);
 	// boolean proxy = false;
 	String osf_name = "";
+	
+	public String check_providers( String expnode, String token) {
+	//String url="https://api.test.osf.io/v2/nodes/"+expnode+"/files/providers/{provider}/"
+		String nodeanurl="https://api.osf.io/v2/nodes/"+expnode+"/addons/";
+		String p = "osfstorage";
+		//https://api.osf.io/v2/addons/
+		System.out.println (nodeanurl);
+		//String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
+		Entry e=get_info(nodeanurl, token);
+		Integer status = (Integer) e.getKey();
+		String result = (String) e.getValue();
+		
+		JsonElement jsonEl2 = new JsonParser().parse(result);
+		JsonObject obj = jsonEl2.getAsJsonObject();
+		JsonArray jarray = obj.getAsJsonArray("data");
+		for (JsonElement pa : jarray) {
+			JsonObject pObj = pa.getAsJsonObject();
+		JsonElement pname = pObj.get("attributes").getAsJsonObject().get("id");
+		String fname = (pname instanceof JsonNull) ? "" : pname.getAsString();
+		System.out.println(fname);
+		if (!fname.equals(p)){
+			p = fname;
+		}
+		}
+		return p;
+	}
 
     public String check_folders( String expnode, String token, String folderpath,String provider) {
 	String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+provider+"/?kind=folder&name=" +folderpath;
