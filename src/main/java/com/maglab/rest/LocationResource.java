@@ -182,10 +182,12 @@ public class LocationResource {
 		osfUtils osfu = new osfUtils();
 		System.out.println("was here1 in redirect" + inoauthcode);
 		System.out.println("was here1 in redirect" + state);
-		state=state.replace("%7C","|");
-		String[] parts = state.split("|");
+		//state=state.replace("%7C","|");
+		//string.split(Pattern.quote("|"))
+		String[] parts = state.split("\\|");
 		String expid = parts[0]; //expid
 		String station = parts[1]; //location
+		System.out.println(expid);
 		String dr = sqldf.format(now);
 
 		Entry en = osfu.do_token(inoauthcode, "");
