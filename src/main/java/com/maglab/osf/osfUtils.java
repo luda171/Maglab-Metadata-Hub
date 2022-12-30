@@ -208,24 +208,7 @@ public class osfUtils {
 		return entry;
 	}
 
-/*	public Entry check_addons(String exp,) {
-		AbstractMap.SimpleEntry<Integer, String> entry = null;
-		String addonurl= "https://api.osf.io/v2/addons/";
-		HttpGet get = new HttpGet(addonurl);
-		if (proxy) {
-			get.setConfig(config);
-		}
-		get.addHeader("Authorization", "Bearer " + token);
-		HttpResponse response = httpClient.execute(get);
-		int code = response.getStatusLine().getStatusCode();
-		HttpEntity resentity = response.getEntity();
-		result = EntityUtils.toString(resentity);
-		entry = new AbstractMap.SimpleEntry<>(code, result);
-		System.out.println(result);
-	return null;
-	
-	}
-	*/
+
 	public Entry refresh_token(String rftoken) {
 		HttpPost post = null;
 		AbstractMap.SimpleEntry<Integer, String> entry = null;
@@ -584,7 +567,7 @@ public class osfUtils {
 		return proj_id;
 	}
 
-	public String create_initial_project_experiment_wiki(String token, String pid, String expire, String rtoken) {
+	public String create_initial_project_experiment_wiki(String token, String pid, String expire, String rtoken,String station) {
 
 		DbUtils dbu = new DbUtils();
 		List exp = dbu.getbyPid(pid);
@@ -702,7 +685,7 @@ public class osfUtils {
 		System.out.println("inserted proj:" + pr_id);
 		System.out.println("inserted exp:" + exp_id);
 		System.out.println("inserted wiki:" + wiki_id);
-		dbu.insert_token(token, osf_name, expire, pid, pr_id, exp_id, wiki_id, rtoken);
+		dbu.insert_token(token, osf_name, expire, pid, pr_id, exp_id, wiki_id, rtoken,station);
 		return osf_name;
 	}
 

@@ -296,13 +296,13 @@ public List <Experiment> getbyPid(String  pid) {
 		 return expms;
 		 
 	 }
-	 public void insert_token(String ast,String name,String expire,String state,String proj_id,String exp_id,String wiki_id,String rtoken) {
+	 public void insert_token(String ast,String name,String expire,String state,String proj_id,String exp_id,String wiki_id,String rtoken,String station) {
 		 //{"access_token":"AT-25-YtRAh12kWB3SxUuOxnBYpnuqiRQC5ZR1","token_type":"bearer","expires_in":28800,"scope":"osf.full_write"}
 		 Connection conn =null;
-		 String sql="select * osf_user_access_log where pid=? ";
-		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token)"+
+		 //String sql="select * osf_user_access_log where pid=? ";
+		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token,location)"+
 		"values(?,?,?,?,?"+
-				",?,?,?,?,?)";
+				",?,?,?,?,?,?)";
 		
 		 //Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		 //JsonElement jsonElement = new JsonParser().parse(json);
@@ -313,7 +313,7 @@ public List <Experiment> getbyPid(String  pid) {
 			int numRowsInserted = 0;
 			
 			PreparedStatement ps = null;
-			PreparedStatement pcheck = null;
+			//PreparedStatement pcheck = null;
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			// Date now = new Date();
 			Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -329,10 +329,12 @@ public List <Experiment> getbyPid(String  pid) {
 				ps.setString(4, curdate);
 				ps.setString(5, expire);
 				ps.setString(6, "A");
+				
 			    ps.setString(7, proj_id);
 			    ps.setString(8, exp_id);
 			    ps.setString(9, wiki_id);
 			    ps.setString(10, rtoken);
+			    ps.setString(11, station);
 				numRowsInserted = ps.executeUpdate();
 				System.out.print("inserted:" + numRowsInserted);
 				//}

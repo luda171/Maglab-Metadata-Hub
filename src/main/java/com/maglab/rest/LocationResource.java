@@ -182,6 +182,10 @@ public class LocationResource {
 		osfUtils osfu = new osfUtils();
 		System.out.println("was here1 in redirect" + inoauthcode);
 		System.out.println("was here1 in redirect" + state);
+		state=state.replace("%7C","|");
+		String[] parts = state.split("|");
+		String expid = parts[0]; //expid
+		String station = parts[1]; //location
 		String dr = sqldf.format(now);
 
 		Entry en = osfu.do_token(inoauthcode, "");
@@ -197,12 +201,12 @@ public class LocationResource {
 		System.out.println("ast"+ast);
 		System.out.println("rt"+rt);
 		osfUtils osf = new osfUtils();
-		String user = osf.create_initial_project_experiment_wiki(ast, state, expire,rt);
+		String user = osf.create_initial_project_experiment_wiki(ast, expid, expire,rt,station);
 
 		// String json = "{user:\"" + user + "\"}";
 		DbUtils utils = new DbUtils();
 
-		SimpleEntry entry = utils.select_osftokeninfo(state, "exp");
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
 		if (entry != null) {
 			String expnode = (String) entry.getValue();
 			String url = "https://osf.io/" + expnode + "/";
@@ -402,12 +406,12 @@ public class LocationResource {
 		DbUtils utils = new DbUtils();
 		//this we indicate that process of auth started
 		utils.insert_auth(expid, "authorizing", station);
-
+        String id = expid+"%7C"+station;
 		URI externalUri = null;
 		try {
 			externalUri = new URI(
 					"https://accounts.osf.io/oauth2/authorize?response_type=code&" + "client_id=" + osfUtils.clientID
-							+ "&redirect_uri=" + osfUtils.callbackurl + "&scope=osf.full_write&state=" + expid +"&access_type=offline");
+							+ "&redirect_uri=" + osfUtils.callbackurl + "&scope=osf.full_write&state=" + id +"&access_type=offline");
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -421,7 +425,7 @@ public class LocationResource {
 	/*
 	 *  http://<hostname>/rest/logoff?expid=P19635-E002-PF
 	 */
-	public Response dologoff(@QueryParam("expid") String expid, @QueryParam("name") String name) {
+	public Response dologoff(@QueryParam("expid") String expid, @QueryParam("name") String name,@QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		osfUtils osf = new osfUtils();
 		Integer status = 204;
