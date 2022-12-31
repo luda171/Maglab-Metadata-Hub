@@ -296,6 +296,10 @@ public List <Experiment> getbyPid(String  pid) {
 		 return expms;
 		 
 	 }
+	 
+	 
+	 //osf token 
+	 
 	 public void insert_token(String ast,String name,String expire,String state,String proj_id,String exp_id,String wiki_id,String rtoken,String station) {
 		 //{"access_token":"AT-25-YtRAh12kWB3SxUuOxnBYpnuqiRQC5ZR1","token_type":"bearer","expires_in":28800,"scope":"osf.full_write"}
 		 Connection conn =null;
@@ -356,11 +360,11 @@ public List <Experiment> getbyPid(String  pid) {
 				}
 			}
 		}
-	 public void update_token(String ast,String pid,String dt,String expire) {
+	 public void update_token(String ast,String pid,String dt,String expire,String location) {
 		 
 		 Connection conn =null;
 		 //String sql="select * osf_user_access_log where pid=? ";
-		String isql= "update osf_user_access_log  set access_token=?,dtgranted=?,expire_in=? where pid=? and dtgranted=?; ";
+		String isql= "update osf_user_access_log  set access_token=?,dtgranted=?,expire_in=? where pid=? and dtgranted=? and location=?; ";
 				
 		
 			int numRowsInserted = 0;
@@ -383,7 +387,7 @@ public List <Experiment> getbyPid(String  pid) {
 				ps.setString(3, expire);
 				ps.setString(4,pid);
 				ps.setString(5,dt);
-				
+				ps.setString(6,location);
 				numRowsInserted = ps.executeUpdate();
 				System.out.print("updated:" + numRowsInserted);
 				//}
@@ -406,11 +410,11 @@ public List <Experiment> getbyPid(String  pid) {
 			}
 		}
 	 
- public void update_token_status(String ast,String pid,String dt,String status) {
+ public void update_token_status(String ast,String pid,String dt,String status,String location) {
 		 
 		 Connection conn =null;
 		 //String sql="select * osf_user_access_log where pid=? ";
-		 String isql= "update osf_user_access_log  set status=?,dtgranted=? where pid=? and dtgranted=? and access_token=?; ";
+		 String isql= "update osf_user_access_log  set status=?,dtgranted=? where pid=? and location=? and dtgranted=? and access_token=?; ";
 						
 			int numRowsInserted = 0;
 			
@@ -429,8 +433,9 @@ public List <Experiment> getbyPid(String  pid) {
 				ps.setString(1,status);
 				ps.setString(2, curdate);
 				ps.setString(3,pid);
-				ps.setString(4,dt);
-				ps.setString(5,ast);
+				ps.setString(4,location);
+				ps.setString(5,dt);
+				ps.setString(6,ast);
 				
 				numRowsInserted = ps.executeUpdate();
 				System.out.print("updated:" + numRowsInserted);
@@ -459,9 +464,9 @@ public List <Experiment> getbyPid(String  pid) {
 		 //{"access_token":"AT-25-YtRAh12kWB3SxUuOxnBYpnuqiRQC5ZR1","token_type":"bearer","expires_in":28800,"scope":"osf.full_write"}
 		 Connection conn =null;
 		 //String sql="select * osf_user_access_log where pid=? ";
-		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token)"+
+		String isql= "insert into osf_user_access_log (pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode,refresh_token,location)"+
 		"values(?,?,?,?,?"+
-				",?,?,?,?,?)";
+				",?,?,?,?,?,?)";
 		
 		 //Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		 //JsonElement jsonElement = new JsonParser().parse(json);
@@ -494,6 +499,7 @@ public List <Experiment> getbyPid(String  pid) {
 			    ps.setNull(8, Types.NULL);
 			    ps.setNull(9, Types.NULL);
 			    ps.setNull(10, Types.NULL);
+			    ps.setString(11, station);
 				numRowsInserted = ps.executeUpdate();
 				System.out.print("inserted:" + numRowsInserted);
 				//}
@@ -516,10 +522,10 @@ public List <Experiment> getbyPid(String  pid) {
 			}
 		}
 	 
-	public  SimpleEntry select_osftokeninfo(String pid,String type) {
+	public  SimpleEntry select_osftokeninfo(String pid,String type,String station) {
 		AbstractMap.SimpleEntry<String, String> entry = null ;
 		                              //(pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode
-		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted,refresh_token from osf_user_access_log where pid=? ";
+		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted,refresh_token from osf_user_access_log where pid=? and location=?";
 		 Connection conn =null;
 		 SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
 		 try {
@@ -530,6 +536,7 @@ public List <Experiment> getbyPid(String  pid) {
 					//Statement statement = conn.createStatement();
 					ps = conn.prepareStatement(mysql);
 					ps.setString(1, pid);
+					ps.setString(2, station);
 					 ResultSet rs = ps.executeQuery();
 					 while(rs.next()) {
 						 
@@ -578,11 +585,11 @@ public List <Experiment> getbyPid(String  pid) {
 		 return entry;
 	}
 	
-	public  Map select_osfinfo(String pid) {
+	public  Map select_osfinfo(String pid,String location) {
 		//AbstractMap.SimpleEntry<String, String> entry = null ;
 		Map m = new HashMap();
 		                              //(pid,access_token,osf_name,dtgranted,expire_in,status,projnode,expnode,wikinode
-		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted,refresh_token,DATETIME(dtgranted,expire_in) as exptime  from osf_user_access_log where pid=? ";
+		String mysql= "select access_token,osf_name,expnode,wikinode, max(dtgranted) as dtgranted,refresh_token,DATETIME(dtgranted,expire_in) as exptime  from osf_user_access_log where pid=? and location=?";
 		 Connection conn =null;
 		 SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
 		 try {
@@ -593,6 +600,7 @@ public List <Experiment> getbyPid(String  pid) {
 					//Statement statement = conn.createStatement();
 					ps = conn.prepareStatement(mysql);
 					ps.setString(1, pid);
+					ps.setString(2, location);
 					 ResultSet rs = ps.executeQuery();
 					 while(rs.next()) {
 						 
@@ -613,7 +621,7 @@ public List <Experiment> getbyPid(String  pid) {
 						 m.put("pid", pid);
 						 m.put("refresh_token", rt);
 						 m.put("exptime", exptime);
-						
+						 m.put("location", location);
 							  if (user.equals("authorizing"))
 							  {  Date d = sqldf.parse(dt); 
 							      Date now = new Date();

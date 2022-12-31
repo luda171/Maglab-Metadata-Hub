@@ -208,7 +208,7 @@ public class LocationResource {
 		// String json = "{user:\"" + user + "\"}";
 		DbUtils utils = new DbUtils();
 
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp",station);
 		if (entry != null) {
 			String expnode = (String) entry.getValue();
 			String url = "https://osf.io/" + expnode + "/";
@@ -264,7 +264,7 @@ public class LocationResource {
 		//String addonurl= "https://api.osf.io/v2/addons/";
 		osfUtils osfu = new osfUtils();	
 		this.docheck(expid,  station);
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp",station);
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		System.out.println("expnode" + expnode);
@@ -315,14 +315,14 @@ public class LocationResource {
 	/*
 	 * https://magx.lanl.gov/rest/updatewiki?name=p004_113021.md&expid=P19635-E002-PF
 	 */
-	public Response doOSFPUT(String msg, @QueryParam("name") String name, @QueryParam("expid") String expid) {
+	public Response doOSFPUT(String msg, @QueryParam("name") String name, @QueryParam("expid") String expid,@QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		osfUtils osfu = new osfUtils();
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "wiki");
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "wiki",station);
 		String wikinode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		System.out.println("wikinode" + wikinode);
-		SimpleEntry expentry = utils.select_osftokeninfo(expid, "exp");
+		SimpleEntry expentry = utils.select_osftokeninfo(expid, "exp",station);
 		String expnode = (String) entry.getValue();
 		System.out.println(expnode);
 		// String wtext=osfu.get_wiki_text(expid, token);
@@ -361,10 +361,10 @@ public class LocationResource {
 	/*
 	 * https://magx.lanl.gov/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
 	 */
-	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath,@QueryParam("addon") String provider) {
+	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath,@QueryParam("addon") String provider,@QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		String fpath=""; 
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp");
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp",station);
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		osfUtils osfu = new osfUtils();
@@ -433,7 +433,7 @@ public class LocationResource {
 		Integer status = 204;
 		String result = "";
 		//SimpleEntry entry = utils.select_osftokeninfo(expid, "user");
-		Map mosf=utils.select_osfinfo(expid);
+		Map mosf=utils.select_osfinfo(expid,station);
 		if (mosf.containsKey("access_token")) {
 		//if (entry != null) {
 			//String token = (String) entry.getValue();
@@ -449,6 +449,7 @@ public class LocationResource {
 				System.out.println(result);
 				String dt =(String) mosf.get("dtgranted");
 				// status R -revoke
+				utils.update_token_status(token, expid, dt,"R",station);
 				
               Entry ent = osf.do_token(refresh_token, "revoke");
 				
@@ -456,10 +457,9 @@ public class LocationResource {
 				System.out.println("refresh_revoked:" + status);
 				result = (String) ent.getValue();
 				System.out.println(result);
-				String dt2 =(String) mosf.get("dtgranted");
 				
+								
 				
-				utils.update_token_status(token, expid, dt,"R");
 				
 				
 			}
@@ -489,8 +489,8 @@ public class LocationResource {
 		osfUtils osf = new osfUtils();
 		String userdefault = "unauthorized";
 		String nodeurl = osf.uurl + "me/";
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "user");
-		Map mosf=utils.select_osfinfo(expid);
+		SimpleEntry entry = utils.select_osftokeninfo(expid, "user",station);
+		Map mosf=utils.select_osfinfo(expid,station);
 		
 		if (entry != null) {
 			String token = (String) entry.getValue();
@@ -537,7 +537,7 @@ public class LocationResource {
 					    System.out.println("new ast:"+ast);
 					    //System.out.println(rt);
 					    String dt=(String) mosf.get("dtgranted");
-					    utils.update_token(ast, expid, dt,expire);
+					    utils.update_token(ast, expid, dt,expire,station);
 					   }else {
 					    //old behavier tell that token expired
 						   //renewal of token  failed
