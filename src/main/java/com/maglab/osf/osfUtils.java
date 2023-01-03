@@ -148,9 +148,11 @@ public class osfUtils {
 
 	for (JsonElement pa : jarray) {
 		JsonObject pObj = pa.getAsJsonObject();
-	JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("kind");
+	JsonElement folderk = pObj.get("attributes").getAsJsonObject().get("kind");
+	String fkname = (folderk instanceof JsonNull) ? "" : folderk.getAsString();
+	JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("name");
 	String fname = (foldername instanceof JsonNull) ? "" : foldername.getAsString();
-	if (fname.equals("folder")) {
+	if (fkname.equals("folder")&& fname.equals(folderpath)) {
 		 JsonElement foldpath = pObj.get("attributes").getAsJsonObject().get("path");
 		 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
 		 System.out.println("folder path existed:"+fid);
