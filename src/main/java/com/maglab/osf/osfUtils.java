@@ -134,8 +134,8 @@ public class osfUtils {
 	String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+provider+"/?kind=folder&name=" +folderpath;
 	String fid="";
 	 //get list of folders
-	String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[kind]=folder";
-	//String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[name]=folderpath";
+	//String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[kind]=folder";
+	String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[name]="+folderpath;
 	Entry fr =  get_info(checkurl, token);
 	String result = (String) fr.getValue();
 	System.out.println("folderlist:"+result);
@@ -148,9 +148,9 @@ public class osfUtils {
 
 	for (JsonElement pa : jarray) {
 		JsonObject pObj = pa.getAsJsonObject();
-	JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("name");
+	JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("kind");
 	String fname = (foldername instanceof JsonNull) ? "" : foldername.getAsString();
-	if (fname.equals(folderpath)) {
+	if (fname.equals("folder")) {
 		 JsonElement foldpath = pObj.get("attributes").getAsJsonObject().get("path");
 		 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
 		 System.out.println("folder path existed:"+fid);
