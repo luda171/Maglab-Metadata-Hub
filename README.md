@@ -112,7 +112,7 @@ GET  https://localhost:8085/rest/auth?expid=P19635-E002-PF&station=Cell_4
 ```
 *  Initiates a logoff of user from osf
 ``` sh
-GET http://localhost:8085/rest/logoff?expid=P19635-E002-PF
+GET http://localhost:8085/rest/logoff?expid=P19635-E002-PF&station=Cell_4
 ```
 * Check user authorization status
 ``` sh
@@ -120,11 +120,11 @@ GET https://localhost:8085/rest/status?expid=P19635-E002-PF&station=Cell_4
 ```
 * Submit file stream
 ``` sh
-PUT https://hostname:8085/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
+PUT https://hostname:8085/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF&station=Cell_4
 
 * Submit wiki update for current  experiment for the station  
 ``` sh
-PUT https://hostname:8085/rest/updatewiki?name=p004_113021.tdms&expid=P19635-E002-PF
+PUT https://hostname:8085/rest/updatewiki?name=p004_113021.tdms&expid=P19635-E002-PF&station=Cell_4
 ``` 
 
 ``` 
@@ -134,4 +134,4 @@ A LabVIEW client module example can be found at https://github.com/ffb-LANL/LabA
 ### Who do I talk to? ###
 
 * Lyudmila Balakireva ludab@lanl.gov
-* Other community or team contact
+
