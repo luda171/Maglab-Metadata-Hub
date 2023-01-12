@@ -5,33 +5,33 @@ https://github.com/ffb-LANL/High-Magnetic-Field-Science-Toolset
 
 ### What is this repository for? ###
 
-The Metadata hub  provides the user interface and  API to sync captured data and metadata  to OSF (Open Science Framework) repository.  
+The Maglab Metadata Hub maintains the metadata associated with the Maglab users' projects.  The actual framework architecture consists of 3 independent parts – a server (Hub) which contains the user projects info, a data acquisition client module to read the project info from the Hub, and an optional library to push the acquired experimental data and metadata to the Open Science Framework (OSF). The Hub provides the GUI web interface and the API to access the project metadata and to synchronize the captured data and metadata to the OSF repository.
 
 
-### How do I get set up? ###
+### How to get install and set up the Hub###
 
-* Summary of set up. 
+* Instalation summary 
 ``` sh
-see linux_install.readme.md for red hat linux example of java,maven and nginx install. 
-** JAVA 8
-** Maven  to compile
+** consult with linux_install.readme.md for red hat linux example of java, maven, and nginx install. 
+** install JAVA 8
+** compile souce code with Maven
 
 ```
 * Register your application with OSF
 ``` sh
 login to OSF
-go to Developer APPS tab and click "Create Developer APP button"
+go to Developer APPS tab and click "Create Developer APP button":
 
 ```
 ![alt text](https://github.com/luda171/Maglab-Metadata-Hub/blob/master/img/reg_osf0.png?raw=true)
 ``` sh
-and enter your server information, see example.
+and enter your server information:
 ```
 ![alt text](https://github.com/luda171/Maglab-Metadata-Hub/blob/master/img/reg_osf1.png?raw=true)
 
-* Configuration
+* Edit configuration
 ``` sh
-edit src/main/resources/config.properties with your custom parameters
+edit src/main/resources/config.properties with your custom parameters:
 
 osf.callback = https://<hostname>/rest/callback
 maglabfairdata.clientID = a7****d36acb8b7d2b5f28246
@@ -62,10 +62,10 @@ chmod +x start.sh
 nohup ./start.sh > out2.txt &
 see  linux_install.readme.md how to config application to run as service on linux.
 ```
-### CLENT interface  for the list of experiments ### 
+### Client GUI interface  for the list of experiments ### 
 *http://localhost:8085/cal
 
-## API ##
+## HUB API ##
 
 Base url for API:  http://localhost:8085/rest/
 
@@ -104,7 +104,7 @@ GET  https://localhost:8085/rest/now/Cell_1
 example
 GET  https://localhost:8085/rest/20210608/Cell_4
 ```
-##OSF sync
+##OSF syncronization
 
 *  Initiates a osf form that asks the user to grant authorization for application to sync data. 
 ``` sh
@@ -118,14 +118,18 @@ GET http://localhost:8085/rest/logoff?expid=P19635-E002-PF
 ``` sh
 GET https://localhost:8085/rest/status?expid=P19635-E002-PF&station=Cell_4
 ```
-* Submit wiki update for current  experiment for the station  
-``` sh
-PUT https://hostname:8085/rest/updatewiki?name=p004_113021.md&expid=P19635-E002-PF
-``` 
 * Submit file stream
 ``` sh
 PUT https://hostname:8085/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
+
+* Submit wiki update for current  experiment for the station  
+``` sh
+PUT https://hostname:8085/rest/updatewiki?name=p004_113021.tdms&expid=P19635-E002-PF
 ``` 
+
+``` 
+
+A LabVIEW client module example can be found at https://github.com/ffb-LANL/LabActor/tree/master/Post-Processors/Log%20Record
 
 ### Who do I talk to? ###
 
