@@ -8,7 +8,7 @@ https://github.com/ffb-LANL/High-Magnetic-Field-Science-Toolset
 The Maglab Metadata Hub maintains the metadata associated with the Maglab users' projects.  The actual framework architecture consists of 3 independent parts – a server (Hub) which contains the user projects info, a data acquisition client module to read the project info from the Hub, and an optional library to push the acquired experimental data and metadata to the Open Science Framework (OSF). The Hub provides the GUI web interface and the API to access the project metadata and to synchronize the captured data and metadata to the OSF repository.
 
 
-### How to get install and set up the Hub###
+### How to get install and set up the Hub ###
 
 * Instalation summary 
 ``` sh
