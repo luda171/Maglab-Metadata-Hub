@@ -97,14 +97,14 @@ GET  https://localhost:8085/rest/now/Cell_1
    }
 ]
   
-	 ```
+```
 * Gives current  experiment for the station with specified start date in json format
 * https://localhost:8085/rest/[date]/[station]
  ``` sh
 example
 GET  https://localhost:8085/rest/20210608/Cell_4
 ```
-##OSF syncronization
+## OSF syncronization
 
 *  Initiates a osf form that asks the user to grant authorization for application to sync data. 
 ``` sh
