@@ -104,6 +104,10 @@ GET  https://localhost:8085/rest/now/Cell_1
 example
 GET  https://localhost:8085/rest/20210608/Cell_4
 ```
+* Gives list of all experiments from start to end in json format
+ ``` sh
+	  https://magx.lanl.gov/rest/all?start=20210608&end=20210906
+```
 ## OSF syncronization
 
 *  Initiates a osf form that asks the user to grant authorization for application to sync data. 
