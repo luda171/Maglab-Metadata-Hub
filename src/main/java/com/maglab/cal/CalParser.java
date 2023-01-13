@@ -255,9 +255,14 @@ public class CalParser {
 						}
 						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						//if ((ex.getFacility().trim()).equals("Pulsed Field")) {
+						if (facilityfilter.equals("all")) {
+							insert(ex, conn);
+						}
+						else {
 							if ((ex.getFacility().trim()).equals(facilityfilter)) {
 							
 						insert(ex, conn);
+						}
 						}
 							delete(conn);
 						System.out.println("finished loading calendar for: " +facilityfilter);
