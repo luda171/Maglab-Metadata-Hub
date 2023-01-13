@@ -129,7 +129,7 @@ PUT https://hostname:8085/rest/updatewiki?name=p004_113021.tdms&expid=P19635-E00
 
 ``` 
 
-A LabVIEW client module example can be found at https://github.com/ffb-LANL/LabActor/tree/master/Post-Processors/Log%20Record
+A LabVIEW client module example can be found at https://github.com/ffb-LANL/NHMFL_Core/blob/master/Libraries/FAIR%20Data/MagLab%20Hub%20Client.vi
 
 ### Who do I talk to? ###
 
