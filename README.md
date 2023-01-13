@@ -37,7 +37,7 @@ osf.callback = https://<hostname>/rest/callback
 maglabfairdata.clientID = a7****d36acb8b7d2b5f28246
 maglabfairdata.clientSecret = Oi****peigyMLlmcpIX61xmcNIAGuLCpCcayFdn
 cal.facility=Pulsed Field
-
+(for all records, specify cal.facility=all )
 edit src/main/resources/application.properties and config.properties with
 proxy settings.
 ``` 
