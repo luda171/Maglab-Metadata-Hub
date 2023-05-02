@@ -8,7 +8,7 @@ https://github.com/ffb-LANL/High-Magnetic-Field-Science-Toolset
 The Maglab Metadata Hub maintains the metadata associated with the Maglab users' projects.  The actual framework architecture consists of 3 independent parts – a server (Hub) which contains the user projects info, a data acquisition client module to read the project info from the Hub, and an optional library to push the acquired experimental data and metadata to the Open Science Framework (OSF). The Hub provides the GUI web interface and the API to access the project metadata and to synchronize the captured data and metadata to the OSF repository.
 
 
-### How to get install and set up the Hub###
+### How to get install and set up the Hub ###
 
 * Instalation summary 
 ``` sh
@@ -37,7 +37,7 @@ osf.callback = https://<hostname>/rest/callback
 maglabfairdata.clientID = a7****d36acb8b7d2b5f28246
 maglabfairdata.clientSecret = Oi****peigyMLlmcpIX61xmcNIAGuLCpCcayFdn
 cal.facility=Pulsed Field
-
+(for all records, specify cal.facility=all )
 edit src/main/resources/application.properties and config.properties with
 proxy settings.
 ``` 
@@ -97,14 +97,18 @@ GET  https://localhost:8085/rest/now/Cell_1
    }
 ]
   
-	 ```
+```
 * Gives current  experiment for the station with specified start date in json format
 * https://localhost:8085/rest/[date]/[station]
  ``` sh
 example
 GET  https://localhost:8085/rest/20210608/Cell_4
 ```
-##OSF syncronization
+* Gives list of all experiments from start to end in json format
+ ``` sh
+	  https://magx.lanl.gov/rest/all?start=20210608&end=20210906
+```
+## OSF syncronization
 
 *  Initiates a osf form that asks the user to grant authorization for application to sync data. 
 ``` sh
@@ -121,15 +125,15 @@ GET https://localhost:8085/rest/status?expid=P19635-E002-PF&station=Cell_4
 * Submit file stream
 ``` sh
 PUT https://hostname:8085/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF&station=Cell_4
-
+``` 
 * Submit wiki update for current  experiment for the station  
 ``` sh
 PUT https://hostname:8085/rest/updatewiki?name=p004_113021.tdms&expid=P19635-E002-PF&station=Cell_4
 ``` 
 
-``` 
 
-A LabVIEW client module example can be found at https://github.com/ffb-LANL/LabActor/tree/master/Post-Processors/Log%20Record
+
+A LabVIEW client module example can be found at https://github.com/ffb-LANL/NHMFL_Core/blob/master/Libraries/FAIR%20Data/MagLab%20Hub%20Client.vi
 
 ### Who do I talk to? ###
 
