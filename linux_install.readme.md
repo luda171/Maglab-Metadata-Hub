@@ -129,11 +129,7 @@ jar -xf $WORKDIR/target/maglabproject-1.0-SNAPSHOT.jar
 
 ```
 
- 
- 
- 
- 
-## check that service runs correctly
+ ## check that service runs correctly
 ``` sh
  > sudo service maghub start 
  > sudo service maghub stop
