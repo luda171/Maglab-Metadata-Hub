@@ -130,13 +130,54 @@ public class osfUtils {
 		return p;
 	}
 
+	
+	public String get_folder_with_next(String checkurl,String token,String  folderpath) {
+		String fid="";
+		Entry fr =  get_info(checkurl, token);
+		String result = (String) fr.getValue();
+		System.out.println("folderlist:"+result);
+		Integer frcode = (Integer) fr.getKey();
+		System.out.println(frcode);
+		System.out.println("osf folder status: " + frcode);
+		JsonElement jsonEl2 = new JsonParser().parse(result);
+		JsonObject obj = jsonEl2.getAsJsonObject();
+		
+		JsonArray jarray = obj.getAsJsonArray("data");
+		for (JsonElement pa : jarray) {
+			JsonObject pObj = pa.getAsJsonObject();
+		JsonElement folderk = pObj.get("attributes").getAsJsonObject().get("kind");
+		String fkname = (folderk instanceof JsonNull) ? "" : folderk.getAsString();
+		JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("name");
+		String fname = (foldername instanceof JsonNull) ? "" : foldername.getAsString();
+		if (fkname.equals("folder")&& fname.equals(folderpath)) {
+			 JsonElement foldpath = pObj.get("attributes").getAsJsonObject().get("path");
+			 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
+			 System.out.println("folder path existed:"+fid);
+			 break;
+		}
+		}
+		JsonElement jnext = obj.get("links").getAsJsonObject().get("next");
+		String next = (jnext instanceof JsonNull) ? "" : jnext.getAsString();
+
+		Boolean donext = false;
+		
+		if (next.equals(""))
+			donext = false;
+		else {
+			donext = true;
+		}
+		if ( fid.equals("") && donext) {
+			fid = get_folder_with_next(next,token,folderpath);
+		}
+		return fid;
+	}
     public String check_folders( String expnode, String token, String folderpath,String provider) {
 	String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+provider+"/?kind=folder&name=" +folderpath;
 	String fid="";
 	 //get list of folders
 	//String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[kind]=folder";
 	String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[name]="+folderpath;
-	Entry fr =  get_info(checkurl, token);
+	/*Entry fr =  get_info(checkurl, token);
 	String result = (String) fr.getValue();
 	System.out.println("folderlist:"+result);
 	Integer frcode = (Integer) fr.getKey();
@@ -158,13 +199,17 @@ public class osfUtils {
 		 System.out.println("folder path existed:"+fid);
 	}
 	}
+	*/
+	fid = get_folder_with_next(checkurl,token,folderpath);
 //if folder not exists create it 
 	if ( fid.equals("")) {
 	Entry f = do_put_folder(putfolderurl,  token);
+	
 	if (f != null) {
 		String fresult = (String) f.getValue();
 		Integer fcode = (Integer) f.getKey();
 		System.out.println("folder:"+fresult);
+		
 		System.out.println("osf folder status: " + fcode);
 		JsonElement jsonEl = new JsonParser().parse(fresult);
 		JsonObject user = jsonEl.getAsJsonObject();
@@ -490,7 +535,7 @@ public class osfUtils {
 
 		Boolean donext = false;
 		// if (next.equals("null")) donext=false;
-		if (next.equals(next))
+		if (next.equals(""))
 			donext = false;
 		else {
 			donext = true;
