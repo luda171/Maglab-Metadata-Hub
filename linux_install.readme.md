@@ -114,9 +114,9 @@ Restart=always
 ```
 change permissions of ./start.sh , ./tmp, ./logs
 chmod 777 start.sh
-``` sh
+
 ### content of start.sh file
-```
+``` sh
 #!/bin/bash
 WORKDIR=/data/web/Maglab-Metadata-Hub
 #JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk/
