@@ -521,7 +521,7 @@ public class osfUtils {
 		return entry;
 
 	}
-	
+	/*
 	public String get_userprojects_next(String nodeurl, String token, String proposal, String field) {
 		String proj_id = null;
 		Entry ep = get_info(nodeurl, token);
@@ -558,52 +558,56 @@ public class osfUtils {
 		return proj_id;
 	}
 
-	public String get_userprojects(String userurl, String token, String proposal, String field) {
-		String proj_id = null;
+	 public String get_userprojects(String userurl,
+			                       String token,
+			                       String proposal,
+			                       String field) {
+		String projectId  = null;
 		// String userurl=uurl+"me/";
 		System.out.println(userurl);
 		try {
-			Entry er = get_info(userurl, token);
-			String r = (String) er.getValue();
-			System.out.println("r" + r);
-			JsonElement jsonEl = new JsonParser().parse(r);
-
+			Entry userInfo = get_info(userurl, token);
+			String userInfoResponse = (String) userInfo.getValue();
+			System.out.println("User Info: " + userInfoResponse);
+			
+			JsonElement jsonEl = new JsonParser().parse(userInfoResponse);
 			JsonObject user = jsonEl.getAsJsonObject();
-
 			JsonObject data = user.get("data").getAsJsonObject();
 
 			String userid = data.get("id").getAsString();
-			System.out.println("userid" + userid);
+			System.out.println("User ID:" + userid);
 			osf_name = data.get("attributes").getAsJsonObject().get("full_name").getAsString();
 			System.out.println(osf_name);
+			
 			System.out.println(uurl + userid + "/nodes/");
-			Entry ep = get_info(uurl + userid + "/nodes/", token);
-			String p = (String) ep.getValue();
-			JsonElement jsonEl2 = new JsonParser().parse(p);
-			JsonObject obj = jsonEl2.getAsJsonObject();
-			JsonArray jarray = obj.getAsJsonArray("data");
+			
+			Entry nodesInfo = get_info(uurl + userid + "/nodes/", token);
+			String nodesResponse = (String) nodesInfo.getValue();
+			JsonElement nodesJsonElement = new JsonParser().parse(nodesResponse);
+			JsonObject obj = nodesJsonElement.getAsJsonObject();
+			JsonArray  nodesArray = obj.getAsJsonArray("data");
 			JsonElement jnext = obj.get("links").getAsJsonObject().get("next");
-			String next = (jnext instanceof JsonNull) ? "" : jnext.getAsString();
-
+			String nextLink = (jnext instanceof JsonNull) ? "" : jnext.getAsString();
+			boolean hasMore = !nextLink.isEmpty();
 			Boolean donext = false;
-			// if (next.equals("null")) donext=false;
-			if (next.equals(""))
+			
+			if (nextLink.equals(""))
 				donext = false;
 			else {
 				donext = true;
 			}
-			System.out.println(next);
-			for (JsonElement pa : jarray) {
+			System.out.println(nextLink);
+			for (JsonElement pa :  nodesArray) {
 				JsonObject prObj = pa.getAsJsonObject();
 				String desc = (String) prObj.get("attributes").getAsJsonObject().get(field).getAsString();
 				if (desc.contains(proposal)) {
-					proj_id = (String) prObj.get("id").getAsString();
+					projectId  = (String) prObj.get("id").getAsString();
 					// System.out.print(proj_id);
 					break;
 				}
 			}
-			if (proj_id == null && donext) {
-				proj_id = get_userprojects_next(next, token, proposal, field);
+			if (projectId  == null && donext) {
+				projectId  = get_userprojects_next(nextLink, token, proposal, field);
 				// proj_id=get_userprojects(next, token, proposal);
 			}
 		} catch (Exception e) {
@@ -612,17 +616,22 @@ public class osfUtils {
 		}
 		// String
 		// username=propdata.get("attributes").getAsJsonObject().get("description").getAsString();
-		return proj_id;
+		return projectId;
 	}
 
-	public String create_initial_project_experiment_wiki(String token, String pid, String expire, String rtoken,String station) {
+	public String create_initial_project_experiment_wiki(String token,
+			                                             String pid,
+			                                             String expire, 
+			                                             String rtoken,
+			                                             String station) {
 
 		DbUtils dbu = new DbUtils();
-		List exp = dbu.getbyPid(pid);
+		List <Experiment> experiments = dbu.getbyPid(pid);
 		String prop = pid;
 		Experiment e = null;
-		if (exp.size() > 0) {
-			e = (Experiment) exp.get(0);
+		
+		if (experiments.size() > 0) {
+			e = (Experiment) experiments.get(0);
 			prop = e.getProposal_Number();
 		}
 
@@ -631,57 +640,64 @@ public class osfUtils {
 			System.out.println("experiment exists:" + exp_id);
 		}
 		String pr_id = get_userprojects(uurl + "me/", token, prop, "description");
+		
 		if (pr_id == null && exp_id == null) {
 
-			String bod = compose_json_project(e);
-			System.out.println("rr:" + bod);
-			// String r2 = do_post(apiurl, bod, token);
-			Entry e2 = do_post(apiurl, bod, token);
-			Integer status = (Integer) e2.getKey();
+			String projectJson = compose_json_project(e);
+			System.out.println("Project JSON:" + projectJson);
+			
+			Entry projectEntry = do_post(apiurl, projectJson, token);
+			Integer status = (Integer) projectEntry.getKey();
 			System.out.println("status" + status);
-			String r2 = (String) e2.getValue();
-			JsonElement jsonEl2 = new JsonParser().parse(r2);
+			String response = (String) projectEntry.getValue();
+			JsonElement jsonEl2 = new JsonParser().parse(response);
 			JsonObject obj = jsonEl2.getAsJsonObject();
 			pr_id = obj.get("data").getAsJsonObject().get("id").getAsString();
-			System.out.println("new project creation:" + r2);
+			System.out.println("New project created:" + response);
 			// need to parse id
 		} else {
-			System.out.println("existed project id:" + pr_id);
+			System.out.println("Existed project id:" + pr_id);
 		}
+		
+		
+		
 		String wiki_id = "";
 
 		if (exp_id == null) {
-			String ex = compose_json_exp(e);
-			String eurl = apiurl + pr_id + "/children/";
-			// String r3 = do_post(eurl, ex, token);
-			Entry e3 = do_post(eurl, ex, token);
-			Integer status3 = (Integer) e3.getKey();
-			System.out.println("status3" + status3);
-			String r3 = (String) e3.getValue();
+			String expJson = compose_json_exp(e);
+			String expUrl = apiurl + pr_id + "/children/";
+			
+			Entry expEntry = do_post(expUrl, expJson, token);
+			Integer  expStatus = (Integer) expEntry.getKey();
+			System.out.println("Experiment status:" +  expStatus);
+			String expResponse = (String) expEntry.getValue();
 
-			System.out.println("new experiment" + r3);
+			System.out.println("New experiment:" + expResponse);
 
-			JsonElement jsonEl2 = new JsonParser().parse(r3);
-			JsonObject obj = jsonEl2.getAsJsonObject();
-			exp_id = obj.get("data").getAsJsonObject().get("id").getAsString();
-			System.out.println("r3" + exp_id);
+			JsonElement expJsonElement = new JsonParser().parse(expResponse);
+			JsonObject expJsonObject = expJsonElement.getAsJsonObject();
+			exp_id = expJsonObject.get("data").getAsJsonObject().get("id").getAsString();
+			System.out.println("Exp ID:" + exp_id);
+			
+			
+			
 			String wikiurl = apiurl + exp_id + "/wikis/";
-			String wiki = compose_json_wiki(e);
-			System.out.print(wiki);
-			// String r4 = do_post(wikiurl, wiki, token);
-			Entry e4 = do_post(wikiurl, wiki, token);
-			Integer status4 = (Integer) e4.getKey();
-			System.out.println("status4" + status4);
-			String r4 = (String) e4.getValue();
+			String wikiJson  = compose_json_wiki(e);
+			System.out.print(wikiJson );
+			
+			Entry wikiEntry = do_post(wikiurl, wikiJson , token);
+			Integer wikiStatus = (Integer) wikiEntry.getKey();
+			System.out.println("Wiki status:" + wikiStatus);
+			String wikiResponse = (String) wikiEntry.getValue();
 
-			System.out.println(r4);
+			System.out.println(wikiResponse);
 
 			try {
-				JsonElement jsonEl3 = new JsonParser().parse(r4);
-				JsonObject obj3 = jsonEl3.getAsJsonObject();
-				wiki_id = obj3.get("data").getAsJsonObject().get("id").getAsString();
+				JsonElement wikiJsonElement = new JsonParser().parse(wikiResponse);
+				JsonObject wikiJsonObject = wikiJsonElement.getAsJsonObject();
+				wiki_id = wikiJsonObject.get("data").getAsJsonObject().get("id").getAsString();
 
-				System.out.println("wikiid" + wiki_id);
+				System.out.println("Wiki ID:" + wiki_id);
 			} catch (Exception ee) {
 				// TODO Auto-generated catch block
 				ee.printStackTrace();
@@ -705,7 +721,7 @@ public class osfUtils {
 				JsonElement jsonEl = new JsonParser().parse(r);
 
 				JsonObject user = jsonEl.getAsJsonObject();
-				// JsonObject data = user.get("data").getAsJsonObject();
+				
 				JsonArray data = user.getAsJsonArray("data");
 				for (JsonElement pa : data) {
 					JsonObject dat = pa.getAsJsonObject();
@@ -717,26 +733,15 @@ public class osfUtils {
 				ee.printStackTrace();
 			}
 		}
-		/*
-		 * String wiki = compose_json_wiki(e); System.out.print(wiki); String r4 =
-		 * do_post(wikiurl, wiki, token); System.out.println(r4);
-		 * 
-		 * try { JsonElement jsonEl3 = new JsonParser().parse(r4); JsonObject obj3 =
-		 * jsonEl3.getAsJsonObject(); wiki_id =
-		 * obj3.get("data").getAsJsonObject().get("id").getAsString();
-		 * 
-		 * System.out.println("wikiid" + wiki_id); }catch (Exception ee) { // TODO
-		 * Auto-generated catch block ee.printStackTrace(); }
-		 */
-		// dbu.insert_token(response.toString(), state);
+		
 		System.out.println("inserted magproj:" + pid);
-		System.out.println("inserted proj:" + pr_id);
-		System.out.println("inserted exp:" + exp_id);
+		System.out.println("inserted project:" + pr_id);
+		System.out.println("inserted experiment:" + exp_id);
 		System.out.println("inserted wiki:" + wiki_id);
 		dbu.insert_token(token, osf_name, expire, pid, pr_id, exp_id, wiki_id, rtoken,station);
 		return osf_name;
 	}
-
+*/
 	public String compose_json_project(Experiment e) {
 		String summary = "Proposal ID:" + e.getProposal_Number() + ",PI:" + e.getPi();
 		System.out.println(summary);
@@ -763,7 +768,16 @@ public class osfUtils {
 
 		return json;
 	}
+	public String compose_json_exp_component(Experiment e,String component) {
 
+		String title = "Component " + e.getPID() + "-"+component;
+		String summary = "-";
+
+		String json = "{\"data\":{\"type\":\"nodes\",\"attributes\":{\"title\":\"" + title + "\","
+				+ "\"description\":\"" + summary + "\",\"public\":false,\"category\":\"project\"}}}";
+
+		return json;
+	}
 	// not used
 	public String get_wiki_text(String exp_id, String token) {
 		String wikitext = null;

@@ -46,6 +46,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.maglab.model.DbUtils;
 import com.maglab.model.Experiment;
+import com.maglab.osf.osfProject;
 import com.maglab.osf.osfUtils;
 
 import java.io.BufferedReader;
@@ -169,41 +170,40 @@ public class LocationResource {
 
 	
 	/*
-	 * osf synchronization methods
+	 * OSF synchronization methods
 	 */
 	
 	@GET
 	@Path("callback")
 
-	public Response listtestbyNow(@QueryParam("code") String inoauthcode, @QueryParam("state") String state) {
-		Date now = new Date();
-		SimpleDateFormat sqldf = new SimpleDateFormat("yyyy-MM-dd");
-
+	public Response initProjectNow(@QueryParam("code") String inoauthcode, @QueryParam("state") String state) {
+		//Date now = new Date();
+		//SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		//String  currentDate = sqlDateFormat.format(now);
 		osfUtils osfu = new osfUtils();
-		System.out.println("was here1 in redirect" + inoauthcode);
-		System.out.println("was here1 in redirect" + state);
-		//state=state.replace("%7C","|");
-		//string.split(Pattern.quote("|"))
+		System.out.println("OAuth Code:" + inoauthcode);
+		System.out.println("State:" + state);
+		
 		String[] parts = state.split("\\|");
 		String expid = parts[0]; //expid
 		String station = parts[1]; //location
 		System.out.println(expid);
-		String dr = sqldf.format(now);
-
-		Entry en = osfu.do_token(inoauthcode, "");
-		String result = (String) en.getValue();
-		// String result=osfu.do_post(tokenurl,POST_PARAMS,"");
+	
+		Entry tokenEntry = osfu.do_token(inoauthcode, "");
+		String result = (String) tokenEntry.getValue();
+		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		JsonElement jsonElement = new JsonParser().parse(result);
 
 		JsonObject root = jsonElement.getAsJsonObject();
-		String ast = root.get("access_token").getAsString();
+		String accessToken  = root.get("access_token").getAsString();
 		String expire = root.get("expires_in").getAsString();
-		String rt = root.get("refresh_token").getAsString();
-		System.out.println("ast"+ast);
-		System.out.println("rt"+rt);
-		osfUtils osf = new osfUtils();
-		String user = osf.create_initial_project_experiment_wiki(ast, expid, expire,rt,station);
+		String refreshToken = root.get("refresh_token").getAsString();
+		System.out.println("Access Token:"+accessToken );
+		System.out.println("Refresh Token:"+refreshToken);
+		//osfUtils osf = new osfUtils();
+		osfProject osf = new osfProject();
+		String user = osf.create_initial_project_experiment_wiki(accessToken , expid, expire,refreshToken,station);
 
 		// String json = "{user:\"" + user + "\"}";
 		DbUtils utils = new DbUtils();
@@ -213,8 +213,7 @@ public class LocationResource {
 			String expnode = (String) entry.getValue();
 			String url = "https://osf.io/" + expnode + "/";
 			System.out.println(url);
-			// ResponseBuilder r = Response.ok(json);
-			// r.status(200);
+			
 			URI externalUri = null;
 			try {
 				externalUri = new URI(url);
@@ -259,51 +258,39 @@ public class LocationResource {
    
 	@GET 
 	@Path("addons")
-	public Response checkAddons( @QueryParam("expid") String expid, @QueryParam("addonid") String addid,@QueryParam("station") String station) {
+	public Response checkAddons( @QueryParam("expid") String expId, @QueryParam("addonid") String addid,@QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		//String addonurl= "https://api.osf.io/v2/addons/";
 		osfUtils osfu = new osfUtils();	
-		this.docheck(expid,  station);
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp",station);
+		
+		this.doCheck(expId,  station);
+		
+		SimpleEntry entry = utils.select_osftokeninfo(expId, "exp",station);
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		System.out.println("expnode" + expnode);
 		System.out.println("token"+token);
-		String userurl=osfu.uurl+"me/";
-		Entry er = osfu.get_info(userurl, token);
-		String r = (String) er.getValue();
-		System.out.println("r" + r);
-		//JsonElement jsonEl = new JsonParser().parse(r);
-
-		//JsonObject user = jsonEl.getAsJsonObject();
-
-		//JsonObject data = user.get("data").getAsJsonObject();
-
-		//String userid = data.get("id").getAsString();
-		//System.out.println("userid" + userid);
-		//String ua ="https://api.osf.io/v2/users/"+userid + "/addons/";
-		//Entry ee=osfu.get_info(ua, token);
-		//Integer status0 = (Integer) ee.getKey();
-		//String resulte = (String) ee.getValue();
-		//System.out.println(resulte);
-		                       //http://api.osf.io/v2/nodes/gaz5n/addons/box/
 		
-
+		String userUrl = osfu.uurl+"me/";
+		Entry userInfoEntry = osfu.get_info(userUrl, token);
+		String userInfoResponse = (String) userInfoEntry.getValue();
+		System.out.println("User Info:" + userInfoResponse);
+		
 		//String nodeanurl="https://api.test.osf.io/v2/nodes/"+expnode+"/addons/";
-		String nodeanurl="https://api.osf.io/v2/nodes/"+expnode+"/addons/";
+		String nodeAddonsUrl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/";
 		//https://api.osf.io/v2/addons/
-		System.out.println (nodeanurl);
+		System.out.println ("Node Addons URL: " +nodeAddonsUrl);
 		//String nodeaddonurl = "https://api.osf.io/v2/nodes/"+expnode+"/addons/"+addid+"/folders";
-		Entry e=osfu.get_info(nodeanurl, token);
-		Integer status = (Integer) e.getKey();
-		String result = (String) e.getValue();
+		Entry nodeAddonsEntry = osfu.get_info(nodeAddonsUrl, token);
+		Integer status = (Integer) nodeAddonsEntry.getKey();
+		String result = (String) nodeAddonsEntry.getValue();
 		System.out.println(result);
+		
 		if (status == null)
 			status = 403;
 		if (result == null)
-			result = "hub problem";
-       
-		
+			result = "Hub problem";
+       		
 		ResponseBuilder rr = Response.status(status).entity(result);
 		return rr.build();
 	}
@@ -315,7 +302,10 @@ public class LocationResource {
 	/*
 	 * https://magx.lanl.gov/rest/updatewiki?name=p004_113021.md&expid=P19635-E002-PF
 	 */
-	public Response doOSFPUT(String msg, @QueryParam("name") String name, @QueryParam("expid") String expid,@QueryParam("station") String station) {
+	public Response updateOSFWiki(String msg,
+			                @QueryParam("name") String name,
+			                @QueryParam("expid") String expid,
+			                @QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		osfUtils osfu = new osfUtils();
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "wiki",station);
@@ -361,41 +351,53 @@ public class LocationResource {
 	/*
 	 * https://magx.lanl.gov/rest/updatefile?name=p004_113021.tdms&expid=P19635-E002-PF
 	 */
-	public Response doOSFPUTFIle(InputStream in, @QueryParam("name") String name, @QueryParam("expid") String expid, @QueryParam("folder") String folderpath,@QueryParam("addon") String provider,@QueryParam("station") String station) {
+	public Response uploadOSFFIle(InputStream in, 
+			                     @QueryParam("name") String name,
+			                     @QueryParam("expid") String expid,
+			                     @QueryParam("folder") String folderpath,
+			                     @QueryParam("addon") String provider,
+			                     @QueryParam("station") String station,
+			                     @QueryParam("component") String component) {
 		DbUtils utils = new DbUtils();
 		String fpath=""; 
+		
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp",station);
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
 		osfUtils osfu = new osfUtils();
-		//String p = osfu.check_providers(  expnode, token);
-		//if (provider==null) {
-		//	  provider=p;
-		//	}
+		
+		if (component!=null) {
+		osfProject op= new osfProject();		
+		String compnode = op.get_or_create_component(token, expid, expnode,component);
+		if (compnode!=null) {expnode=compnode;}
+		
+		}
+		
+		 // Determine the provider if it's not specified
 		if (provider==null) {
 		  provider="osfstorage";
 		}
-		
+		// Get folder information if folderpath is provided
 		String prp="";
 		//get folder id 
 		if (folderpath!=null){
 		//String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
-			prp=osfu.check_folders(  expnode, token,folderpath, provider);
+			prp=osfu.check_folders(expnode, token,folderpath, provider);
 		}
 		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+prp+"?kind=file&name="	+ name;
 		System.out.println(puturl);
-		ResponseBuilder r;
-		Entry en = (SimpleEntry) osfu.do_put_file(puturl, in, token);
-		if (en != null) {
-			String result = (String) en.getValue();
-			Integer code = (Integer) en.getKey();
+		ResponseBuilder responseBuilder;
+		Entry entryResult = (SimpleEntry) osfu.do_put_file(puturl, in, token);
+		if (entryResult != null) {
+			String result = (String) entryResult.getValue();
+			Integer code = (Integer) entryResult.getKey();
 			System.out.println(result);
 			System.out.println("osf status: " + code);
-			r = Response.status(code).entity(result);
+			responseBuilder = Response.status(code).entity(result);
 		} else {
-			r = Response.status(201);// new resource created
+			responseBuilder = Response.status(201);// new resource created
 		}
-		return r.build();
+		return responseBuilder.build();
 	}
 
 	@Path("auth")
@@ -403,7 +405,7 @@ public class LocationResource {
 	/*  this method initiates a osf form that asks the user to grant authorization for application to sync data. 
 	 *  https://magx.lanl.gov/rest/auth?expid=P19635-E002-PF&station=Cell_4
 	 */
-	public Response doredir(@QueryParam("expid") String expid, @QueryParam("station") String station) {
+	public Response initOSFLoginForm(@QueryParam("expid") String expid, @QueryParam("station") String station) {
 
 		DbUtils utils = new DbUtils();
 		//this we indicate that process of auth started
@@ -427,7 +429,7 @@ public class LocationResource {
 	/*
 	 *  http://<hostname>/rest/logoff?expid=P19635-E002-PF
 	 */
-	public Response dologoff(@QueryParam("expid") String expid, @QueryParam("name") String name,@QueryParam("station") String station) {
+	public Response doLogoff(@QueryParam("expid") String expid, @QueryParam("name") String name,@QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		osfUtils osf = new osfUtils();
 		Integer status = 204;
@@ -459,8 +461,7 @@ public class LocationResource {
 				System.out.println(result);
 				
 								
-				
-				
+			
 				
 			}
 		//}
@@ -484,7 +485,7 @@ public class LocationResource {
 	/*
 	 *  https://magx.lanl.gov/rest/status?expid=P19635-E002-PF&station=Cell_4
 	 */
-	public Response docheck(@QueryParam("expid") String expid, @QueryParam("station") String station) {
+	public Response doCheck(@QueryParam("expid") String expid, @QueryParam("station") String station) {
 		DbUtils utils = new DbUtils();
 		osfUtils osf = new osfUtils();
 		String userdefault = "unauthorized";
