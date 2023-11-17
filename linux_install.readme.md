@@ -114,8 +114,22 @@ Restart=always
 ```
 change permissions of ./start.sh , ./tmp, ./logs
 chmod 777 start.sh
- 
- check that service runs correctly
+
+### content of start.sh file
+``` sh
+#!/bin/bash
+WORKDIR=/data/web/Maglab-Metadata-Hub
+#JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk/
+JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+JAVA_OPTS='-Djdk.http.auth.tunneling.disabledSchemes="" -Djava.io.tmpdir=/data/web/Maglab-Metadata-Hub/tmp'
+export $JAVA_OPTS
+cd $WORKDIR
+jar -xf $WORKDIR/target/maglabproject-1.0-SNAPSHOT.jar
+"${JAVA_HOME}/bin/java" $JAVA_OPTS org.springframework.boot.loader.JarLauncher 
+
+```
+
+ ## check that service runs correctly
 ``` sh
  > sudo service maghub start 
  > sudo service maghub stop
