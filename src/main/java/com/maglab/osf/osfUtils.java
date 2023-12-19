@@ -358,7 +358,43 @@ public class osfUtils {
 		}
 		return entry;
 	}
+    public List get_contributers(String expnode, String token) {
+    	List  users_ids = new ArrayList();
+    	String url_list_contributers="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/";	
+		//String urlcheck_permissions ="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/"+userid+"/";
+    	try  {
+    	Entry perm = get_info(url_list_contributers, token);
+		String pp = (String) perm.getKey();
+		System.out.println("Permissions:"+pp);
+		  Gson gson = new Gson();
+	        JsonObject jsonObject = gson.fromJson(pp, JsonObject.class);
+	        JsonArray dataArray = jsonObject.getAsJsonArray("data");
 
+	        for (JsonElement element : dataArray) {
+	            JsonObject userObject = element.getAsJsonObject();
+
+	            // Get the "users" section for each user
+	            JsonObject users = userObject.getAsJsonObject("relationships").getAsJsonObject("users");
+
+	            // Get the "related" section within "users"
+	            JsonObject related = users.getAsJsonObject("links").getAsJsonObject("related");
+
+	            // Get the "href" value
+	            String href = related.get("href").getAsString();
+
+	            // Extract user IDs from the "href"
+	            String[] parts = href.split("/");
+	            String userId = parts[parts.length - 1]; // Extracting the user ID
+	            System.out.println("Project User ID: " + userId);
+	            users_ids.add( userId);
+	        }
+    	}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	        return users_ids;
+    }
 	public AbstractMap.SimpleEntry do_post(String posturl, String body, String token) {
 		HttpPost post = new HttpPost(posturl);
 		String result = null;
@@ -397,7 +433,44 @@ public class osfUtils {
 		return entry;
 
 	}
+	public AbstractMap.SimpleEntry do_put(String posturl, String body, String token) {
+		HttpPut post = new HttpPut(posturl);
+		String result = null;
+		AbstractMap.SimpleEntry<Integer, String> entry = null;
 
+		if (proxy) {
+			post.setConfig(config);
+		}
+		post.addHeader("Content-Type", "application/vnd.api+json");
+		post.addHeader("Authorization", "Bearer " + token);
+		StringEntity entity;
+		try {
+			entity = new StringEntity(body);
+			post.setEntity(entity);
+			HttpResponse response = httpClient.execute(post);
+
+			int code = response.getStatusLine().getStatusCode();
+			HttpEntity resentity = response.getEntity();
+			result = EntityUtils.toString(resentity);
+			// System.out.println(result);
+			entry = new AbstractMap.SimpleEntry<>(code, result);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			post.releaseConnection();
+		}
+
+		// return result;
+		return entry;
+
+	}
 //not used
 	public String do_put_wiki(String posturl, String body, String token) {
 		HttpPut post = new HttpPut(posturl);
@@ -521,227 +594,7 @@ public class osfUtils {
 		return entry;
 
 	}
-	/*
-	public String get_userprojects_next(String nodeurl, String token, String proposal, String field) {
-		String proj_id = null;
-		Entry ep = get_info(nodeurl, token);
-		String p = (String) ep.getValue();
-		JsonElement jsonEl2 = new JsonParser().parse(p);
-		JsonObject obj = jsonEl2.getAsJsonObject();
-		JsonArray jarray = obj.getAsJsonArray("data");
-
-		JsonElement jnext = obj.get("links").getAsJsonObject().get("next");
-		String next = (jnext instanceof JsonNull) ? "" : jnext.getAsString();
-
-		Boolean donext = false;
-		// if (next.equals("null")) donext=false;
-		if (next.equals(""))
-			donext = false;
-		else {
-			donext = true;
-		}
-		System.out.println(next);
-		for (JsonElement pa : jarray) {
-			JsonObject prObj = pa.getAsJsonObject();
-			// description
-			String desc = (String) prObj.get("attributes").getAsJsonObject().get(field).getAsString();
-			if (desc.contains(proposal)) {
-				proj_id = (String) prObj.get("id").getAsString();
-				// System.out.print(proj_id);
-				break;
-			}
-		}
-		if (proj_id == null && donext) {
-			proj_id = get_userprojects_next(next, token, proposal, field);
-			// proj_id=get_userprojects(next, token, proposal);
-		}
-		return proj_id;
-	}
-
-	 public String get_userprojects(String userurl,
-			                       String token,
-			                       String proposal,
-			                       String field) {
-		String projectId  = null;
-		// String userurl=uurl+"me/";
-		System.out.println(userurl);
-		try {
-			Entry userInfo = get_info(userurl, token);
-			String userInfoResponse = (String) userInfo.getValue();
-			System.out.println("User Info: " + userInfoResponse);
-			
-			JsonElement jsonEl = new JsonParser().parse(userInfoResponse);
-			JsonObject user = jsonEl.getAsJsonObject();
-			JsonObject data = user.get("data").getAsJsonObject();
-
-			String userid = data.get("id").getAsString();
-			System.out.println("User ID:" + userid);
-			osf_name = data.get("attributes").getAsJsonObject().get("full_name").getAsString();
-			System.out.println(osf_name);
-			
-			System.out.println(uurl + userid + "/nodes/");
-			
-			Entry nodesInfo = get_info(uurl + userid + "/nodes/", token);
-			String nodesResponse = (String) nodesInfo.getValue();
-			JsonElement nodesJsonElement = new JsonParser().parse(nodesResponse);
-			JsonObject obj = nodesJsonElement.getAsJsonObject();
-			JsonArray  nodesArray = obj.getAsJsonArray("data");
-			JsonElement jnext = obj.get("links").getAsJsonObject().get("next");
-			String nextLink = (jnext instanceof JsonNull) ? "" : jnext.getAsString();
-			boolean hasMore = !nextLink.isEmpty();
-			Boolean donext = false;
-			
-			if (nextLink.equals(""))
-				donext = false;
-			else {
-				donext = true;
-			}
-			System.out.println(nextLink);
-			for (JsonElement pa :  nodesArray) {
-				JsonObject prObj = pa.getAsJsonObject();
-				String desc = (String) prObj.get("attributes").getAsJsonObject().get(field).getAsString();
-				if (desc.contains(proposal)) {
-					projectId  = (String) prObj.get("id").getAsString();
-					// System.out.print(proj_id);
-					break;
-				}
-			}
-			if (projectId  == null && donext) {
-				projectId  = get_userprojects_next(nextLink, token, proposal, field);
-				// proj_id=get_userprojects(next, token, proposal);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// String
-		// username=propdata.get("attributes").getAsJsonObject().get("description").getAsString();
-		return projectId;
-	}
-
-	public String create_initial_project_experiment_wiki(String token,
-			                                             String pid,
-			                                             String expire, 
-			                                             String rtoken,
-			                                             String station) {
-
-		DbUtils dbu = new DbUtils();
-		List <Experiment> experiments = dbu.getbyPid(pid);
-		String prop = pid;
-		Experiment e = null;
-		
-		if (experiments.size() > 0) {
-			e = (Experiment) experiments.get(0);
-			prop = e.getProposal_Number();
-		}
-
-		String exp_id = get_userprojects(uurl + "me/", token, pid, "title");
-		if (exp_id != null) {
-			System.out.println("experiment exists:" + exp_id);
-		}
-		String pr_id = get_userprojects(uurl + "me/", token, prop, "description");
-		
-		if (pr_id == null && exp_id == null) {
-
-			String projectJson = compose_json_project(e);
-			System.out.println("Project JSON:" + projectJson);
-			
-			Entry projectEntry = do_post(apiurl, projectJson, token);
-			Integer status = (Integer) projectEntry.getKey();
-			System.out.println("status" + status);
-			String response = (String) projectEntry.getValue();
-			JsonElement jsonEl2 = new JsonParser().parse(response);
-			JsonObject obj = jsonEl2.getAsJsonObject();
-			pr_id = obj.get("data").getAsJsonObject().get("id").getAsString();
-			System.out.println("New project created:" + response);
-			// need to parse id
-		} else {
-			System.out.println("Existed project id:" + pr_id);
-		}
-		
-		
-		
-		String wiki_id = "";
-
-		if (exp_id == null) {
-			String expJson = compose_json_exp(e);
-			String expUrl = apiurl + pr_id + "/children/";
-			
-			Entry expEntry = do_post(expUrl, expJson, token);
-			Integer  expStatus = (Integer) expEntry.getKey();
-			System.out.println("Experiment status:" +  expStatus);
-			String expResponse = (String) expEntry.getValue();
-
-			System.out.println("New experiment:" + expResponse);
-
-			JsonElement expJsonElement = new JsonParser().parse(expResponse);
-			JsonObject expJsonObject = expJsonElement.getAsJsonObject();
-			exp_id = expJsonObject.get("data").getAsJsonObject().get("id").getAsString();
-			System.out.println("Exp ID:" + exp_id);
-			
-			
-			
-			String wikiurl = apiurl + exp_id + "/wikis/";
-			String wikiJson  = compose_json_wiki(e);
-			System.out.print(wikiJson );
-			
-			Entry wikiEntry = do_post(wikiurl, wikiJson , token);
-			Integer wikiStatus = (Integer) wikiEntry.getKey();
-			System.out.println("Wiki status:" + wikiStatus);
-			String wikiResponse = (String) wikiEntry.getValue();
-
-			System.out.println(wikiResponse);
-
-			try {
-				JsonElement wikiJsonElement = new JsonParser().parse(wikiResponse);
-				JsonObject wikiJsonObject = wikiJsonElement.getAsJsonObject();
-				wiki_id = wikiJsonObject.get("data").getAsJsonObject().get("id").getAsString();
-
-				System.out.println("Wiki ID:" + wiki_id);
-			} catch (Exception ee) {
-				// TODO Auto-generated catch block
-				ee.printStackTrace();
-			}
-
-		}
-
-		// get all /nodes/{node_id}/wikis/
-		// lookup wikis
-		if (wiki_id.equals("")) {
-			try {
-				String wikiurl = apiurl + exp_id + "/wikis/";
-				// https://api.osf.io/v2/nodes/krcew/wikis/
-
-				// System.out.println(wikiurl);
-
-				Entry er = get_info(wikiurl, token);
-				String r = (String) er.getValue();
-				System.out.println("wikis:" + r);
-
-				JsonElement jsonEl = new JsonParser().parse(r);
-
-				JsonObject user = jsonEl.getAsJsonObject();
-				
-				JsonArray data = user.getAsJsonArray("data");
-				for (JsonElement pa : data) {
-					JsonObject dat = pa.getAsJsonObject();
-					wiki_id = dat.get("id").getAsString();
-					break;
-				}
-			} catch (Exception ee) {
-				// TODO Auto-generated catch block
-				ee.printStackTrace();
-			}
-		}
-		
-		System.out.println("inserted magproj:" + pid);
-		System.out.println("inserted project:" + pr_id);
-		System.out.println("inserted experiment:" + exp_id);
-		System.out.println("inserted wiki:" + wiki_id);
-		dbu.insert_token(token, osf_name, expire, pid, pr_id, exp_id, wiki_id, rtoken,station);
-		return osf_name;
-	}
-*/
+	
 	public String compose_json_project(Experiment e) {
 		String summary = "Proposal ID:" + e.getProposal_Number() + ",PI:" + e.getPi();
 		System.out.println(summary);

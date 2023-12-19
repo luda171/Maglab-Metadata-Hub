@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -41,6 +42,7 @@ import javax.ws.rs.Consumes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -359,12 +361,36 @@ public class LocationResource {
 			                     @QueryParam("station") String station,
 			                     @QueryParam("component") String component) {
 		DbUtils utils = new DbUtils();
+		
 		String fpath=""; 
 		
 		SimpleEntry entry = utils.select_osftokeninfo(expid, "exp",station);
 		String expnode = (String) entry.getValue();
 		String token = (String) entry.getKey();
+		//Map m = utils.select_osfinfo(expid,station);
+		//String userid = (String) m.get("osf_name");
 		osfUtils osfu = new osfUtils();
+	
+		//String url_list_contributers="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/";	
+		
+		
+		//get userid
+			/*
+		String userUrl = osfu.uurl+"me/";
+		Entry userInfoEntry = osfu.get_info(userUrl, token);
+		String userInfoResponse = (String) userInfoEntry.getValue();
+		JsonElement jsonEl = new JsonParser().parse(userInfoResponse);
+		JsonObject user = jsonEl.getAsJsonObject();
+		JsonObject data = user.get("data").getAsJsonObject();
+
+		String userid = data.get("id").getAsString();
+		System.out.println("User ID:" + userid);
+		
+		*/
+		//check contributors of exp node
+	    List users_ids = osfu.get_contributers(expnode, token);
+	        
+		
 		
 		if (component!=null) {
 		osfProject op= new osfProject();		
@@ -396,6 +422,26 @@ public class LocationResource {
 			responseBuilder = Response.status(code).entity(result);
 		} else {
 			responseBuilder = Response.status(201);// new resource created
+		}
+		
+		if (component!=null) {
+			String url_contributers="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/";	
+			if ( users_ids.size()>1) {
+			for (int kk=0;kk<users_ids.size();kk++) {
+				String id = (String) users_ids.get(kk);				
+			    String body = "{\"data\": {\"type\": \"contributors\",\"attributes\": {},\"relationships\": {\"user\": {\"data\": { \"type\": \"users\"," +
+				         " \"id\": \""+ id +"\"}}}}}";
+			    SimpleEntry en = osfu.do_put(url_contributers,  body,  token);
+			   
+			    if (en != null) {
+					String result = (String) en.getValue();
+					Integer code = (Integer) en.getKey();
+					System.out.println(result);
+					System.out.println("osf status to add contributers: " + code);
+			    }
+			}
+				
+			}
 		}
 		return responseBuilder.build();
 	}
