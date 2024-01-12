@@ -229,6 +229,7 @@ public class osfUtils {
 }
 	public Entry get_info(String geturl, String token) {
 		HttpGet get = new HttpGet(geturl);
+		System.out.println("get_info");
 		String result = null;
 		AbstractMap.SimpleEntry<Integer, String> entry = null;
 		if (proxy) {
@@ -242,6 +243,7 @@ public class osfUtils {
 			HttpEntity resentity = response.getEntity();
 			result = EntityUtils.toString(resentity);
 			entry = new AbstractMap.SimpleEntry<>(code, result);
+			System.out.println(geturl);
 			System.out.println(result);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -361,11 +363,13 @@ public class osfUtils {
     public List get_contributers(String expnode, String token) {
     	List  users_ids = new ArrayList();
     	String url_list_contributers="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/";	
+    	System.out.println(url_list_contributers);
 		//String urlcheck_permissions ="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/"+userid+"/";
     	try  {
     	Entry perm = get_info(url_list_contributers, token);
-		String pp = (String) perm.getKey();
-		System.out.println("Permissions:"+pp);
+		//String pp = (String) perm.getKey();
+		//System.out.println("Permissions:"+pp);
+		  String pp = (String) perm.getValue();
 		  Gson gson = new Gson();
 	        JsonObject jsonObject = gson.fromJson(pp, JsonObject.class);
 	        JsonArray dataArray = jsonObject.getAsJsonArray("data");
