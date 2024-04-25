@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <title>Edit page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        fieldset {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        legend {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: inline-block;
+            width: 100px;
+        }
+        
+        input[type="text"],
+        input[type="file"], 
+        select  {
+            width: calc(100% - 120px);
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <form wicket:id="instredit" method="post" enctype="multipart/form-data"  >
+        <fieldset style="display: inline-block;">
+            <legend><h3>Instrument:</h3></legend>
+            <p>
+                <label>Title:</label>
+                <input style="float: right;" type="text" wicket:id="title"  size="100" required/>
+            </p>
+            
+             <p>
+                <label>File:</label>
+               <!--   <input wicket:id="fileInput" type="file"/> -->
+                <input style="float: right;" wicket:id="fileInput" type="file" multiple="multiple" size="100" id="multiUpload"/>
+            </p>
+             <p>
+                <label>User:</label>
+                <input style="float: right;" type="text" wicket:id="admin"  size="100" required/>
+            </p>
+            <p>
+             <label>Type:</label>
+             <select wicket:id="instType"  name="InstrumentType"></select>
+            </p>
+        <p>
+                
+      
+              <label>Delete:</label>
+              <input wicket:id ='check' type="checkbox"  value="delete">yes<br>
+ 
+             <!-- <select wicket:id="out"  name="inoutservice"></select> -->
+            </p>
+        </fieldset>
+        <p>
+            <input type="submit" value="Save"/>
+            <!--   <button wicket:id="submit" type=file multiple=multiple>Upload</button>  -->
+            &nbsp;
+            <a href wicket:id="cancelLink">Cancel</a>
+        </p>
+    </form>
+    <wicket:child/>
+</div>
+</body>
+</html>

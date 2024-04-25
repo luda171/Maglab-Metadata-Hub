@@ -211,6 +211,7 @@ public class osfUtils {
 		System.out.println("folder:"+fresult);
 		
 		System.out.println("osf folder status: " + fcode);
+		if (fcode!=200) return "error:"+fcode + ":"+fresult;
 		JsonElement jsonEl = new JsonParser().parse(fresult);
 		JsonObject user = jsonEl.getAsJsonObject();
 

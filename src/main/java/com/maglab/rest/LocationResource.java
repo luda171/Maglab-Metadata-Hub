@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.net.ssl.HostnameVerifier;
@@ -46,6 +47,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.maglab.instruments.Instrument;
+import com.maglab.instruments.InstrumentService;
 import com.maglab.model.DbUtils;
 import com.maglab.model.Experiment;
 import com.maglab.osf.osfProject;
@@ -68,7 +71,8 @@ public class LocationResource {
 
 	final static String authorizeUrl = "https://accounts.osf.io/oauth2/authorize";
 	static String tokenurl = "https://accounts.osf.io/oauth2/token";
-
+	//@SpringBean
+	//private InstrumentService iservice;
 	@GET
 	@Path("all")
 	@Produces("application/json")
@@ -141,6 +145,22 @@ public class LocationResource {
 
 	}
 
+	@GET
+	@Path("probs/")
+	@Produces("application/json")
+	public Response listProbs() {
+		//InstrumentService service =new InstrumentService();
+		//List instruments=null;
+		System.out.println("in probs");
+
+		DbUtils utils = new DbUtils();
+		List <Instrument> instruments=utils.getProbs();
+		//List instruments=new ArrayList(iservice.getInstruments());
+		GenericEntity<List<Instrument>> myEntity = new GenericEntity<List<Instrument>>(instruments) {
+		};
+		return Response.status(200).entity(myEntity).build();
+	}
+	
 	/*
 	 * Gives current  experiment for the Cell with specified start date in json format
 	 * https://myresearch.institute/rest/20210608/Cell_4
@@ -346,7 +366,18 @@ public class LocationResource {
 		ResponseBuilder r = Response.status(status).entity(result);
 		return r.build();
 	}
-
+	 public static String[] parseResponse(String response) {
+	        String[] parts = response.split(":");
+	       // if (parts.length == 3 && parts[0].equals("error")) {
+	        	 if (parts[0].equals("error")) {
+	            String fcode = parts[1];
+	            String fresult = parts[2];
+	            return new String[] { fcode, fresult };
+	        } else {
+	            return null;
+	        }
+	    }
+	 
 	@Path("updatefile")
 	@PUT
 	// @Consumes(MediaType.APPLICATION_JSON)
@@ -409,6 +440,16 @@ public class LocationResource {
 		if (folderpath!=null){
 		//String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/osfstorage/?kind=folder&name=" +folderpath;
 			prp=osfu.check_folders(expnode, token,folderpath, provider);
+			if (prp.startsWith("error:")) {
+			String[] parts=parseResponse(prp);
+			if (parts != null) {				
+	            int fcode = Integer.parseInt(parts[0]);
+	            String fresult = parts[1];
+	            
+	            ResponseBuilder responseBuilder = Response.status(fcode).entity(fresult);
+	            return responseBuilder.build();
+			}
+			}
 		}
 		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+prp+"?kind=file&name="	+ name;
 		System.out.println(puturl);

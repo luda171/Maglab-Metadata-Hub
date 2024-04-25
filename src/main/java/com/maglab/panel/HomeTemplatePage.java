@@ -9,6 +9,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import com.giffing.wicket.spring.boot.context.scan.WicketHomePage;
 
+
 @AuthorizeInstantiation("USER")
 //@WicketHomePage
 
@@ -27,6 +28,9 @@ public class HomeTemplatePage extends WebPage {
 		//add(new Label(CONTENT_ID, "Put your content here"));
 		BookmarkablePageLink pl = new BookmarkablePageLink("homeLink", MyHomePage.class);
 		add(pl);
+		BookmarkablePageLink prl = new BookmarkablePageLink("probLink", ProbHomePage.class);
+		add(prl);
+	
 		//add(new BookmarkablePageLink("fileLink", MyHomePage.class)); 
 		//add(new Label(CONTENT_ID, new MyHomePage(parameters)));
 		//add(new MyHomePage(parameters));

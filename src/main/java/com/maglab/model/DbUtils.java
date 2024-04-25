@@ -23,6 +23,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.maglab.instruments.Instrument;
 
 
 public class DbUtils {
@@ -30,7 +31,9 @@ public class DbUtils {
 	private static final String SQL_SELECT_NOW_EXPERIMENTS = "SELECT * FROM experiments where location=? and `dtend` >= ? and dtstart<= ? ;";
 	private static final String SQL_SELECT_by_pid_EXPERIMENTS = "SELECT * FROM experiments where pid=?;";
 	private static final String SQL_SELECT_EXPERIMENTS_RANGE = "SELECT * FROM experiments where  dtstart between ? and ? ;";
-	
+	private static final String SQL_SELECT_ALL_ins = "SELECT instrument_pid,title,filename,filestore_path,"
+			+ "create_date,modify_date,out_of_service, instrument_type "
+			+ " FROM instruments p where out_of_service='F' and instrument_type='prob'";
 	 String dbURL = "jdbc:sqlite:pulsefacility.db";
 	 
 		/*
@@ -242,6 +245,55 @@ public List <Experiment> getbyPid(String  pid) {
 		 return expms;
 		 
 	 }
+
+public List <Instrument> getProbs() {
+	 try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	 List <Instrument> expms= new ArrayList();
+	 Connection conn =null;
+	 try {
+		  conn = DriverManager.getConnection(dbURL);
+		
+			if (conn != null) {
+				PreparedStatement ps = null;
+				//Statement statement = conn.createStatement();
+				ps = conn.prepareStatement(SQL_SELECT_ALL_ins);
+				ResultSet rs = ps.executeQuery();
+				 while(rs.next()) {
+				 Instrument ex = new Instrument( rs.getString("instrument_pid"),
+				            rs.getString("title"),
+				            rs.getString("filename"),
+				            rs.getString("filestore_path"),
+				            rs.getString("create_date"),
+				            rs.getString("modify_date"),
+				            rs.getString("out_of_service"),
+				            rs.getString("instrument_type"));
+				  
+				  expms.add(ex);
+				 }
+				 ps.close();
+			}
+	 }
+	 catch (Exception ex) {
+		 
+	 }
+	 finally {
+		 try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	 }
+	 return expms;
+	 
+}
+
+
 	 public List <Experiment> getALL() {
 		 try {
 				Class.forName("org.sqlite.JDBC");

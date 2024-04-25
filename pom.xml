@@ -209,12 +209,17 @@
     <artifactId>wicket-jquery-ui-calendar</artifactId>
     <version>6.29.0</version>
 </dependency>
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver</artifactId>
+        <version>3.8.1</version>
+    </dependency>
+</dependencies>
 <!-- https://mvnrepository.com/artifact/com.googlecode.wicket-jquery-ui/wicket-jquery-ui-samples -->
 <!--<dependency>
     <groupId>com.googlecode.wicket-jquery-ui</groupId>
     <artifactId>wicket-jquery-ui-samples</artifactId>
-    <version>6.19.3</version>
-</dependency> -->
+    <version>6.19.3</version> </dependency> -->
 		<!-- uncomment if WebSocket support is needed
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
@@ -223,7 +228,6 @@
 			<scope>test</scope>
 		</dependency>
 		-->
-	</dependencies>
 	<build>
 		<resources>
 			<resource>

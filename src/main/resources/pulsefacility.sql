@@ -45,6 +45,17 @@ wikinode VARCHAR(15),
 refresh_token VARCHAR(50),
 location VARCHAR(10) 
 )
+CREATE TABLE IF NOT EXISTS instruments (
+		 instrument_pid VARCHAR(36) NOT NULL,
+                 title  TEXT NOT NULL, 
+                 filename TEXT,
+                 filestore_path  TEXT NOT NULL
+                 create_date TEXT,
+                 modify_date TEXT,
+	             out_of_service VARCHAR(1),
+	             instrument_type VARCHAR(50)
+			);
+
 #Alter table osf_user_access_log add   refresh_token VARCHAR(50);
 #Alter table osf_user_access_log add   location VARCHAR(10);
 #.headers ON
