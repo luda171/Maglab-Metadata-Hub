@@ -346,10 +346,12 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
 	public static void createFolder(String directoryPath, String folderName) {
 	    String folderPath = directoryPath + File.separator + folderName;
 
-	    File newFolder = new File(folderPath);
+	   // File newFolder = new File(folderPath);
 
 	    // Set folder permissions
 	    if (System.getProperty("os.name").startsWith("Windows")) {
+	    	 System.out.println("Windows:");
+	    	File newFolder = new File(folderPath);
 	        // For Windows
 	        if (newFolder.mkdir()) {	        	
 	        	newFolder.setReadable(true,false);
@@ -359,6 +361,7 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
 	        }
 	    } else {
 	        // For Unix-like systems
+	    	 System.out.println("Linux");
 	        try {
 	            Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
 	            java.nio.file.Files.createDirectory(Paths.get(folderPath), PosixFilePermissions.asFileAttribute(permissions));
