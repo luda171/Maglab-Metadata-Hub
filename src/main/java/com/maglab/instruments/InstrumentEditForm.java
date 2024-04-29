@@ -2,11 +2,19 @@ package com.maglab.instruments;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -214,7 +222,22 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	
+	public void setPermission(File file) throws IOException{
+	    Set<PosixFilePermission> perms = new HashSet<>();
+	    perms.add(PosixFilePermission.OWNER_READ);
+	    perms.add(PosixFilePermission.OWNER_WRITE);
+	    perms.add(PosixFilePermission.OWNER_EXECUTE);
+
+	    perms.add(PosixFilePermission.OTHERS_READ);
+	    perms.add(PosixFilePermission.OTHERS_WRITE);
+	    perms.add(PosixFilePermission.OTHERS_EXECUTE);
+
+	    perms.add(PosixFilePermission.GROUP_READ);
+	    perms.add(PosixFilePermission.GROUP_WRITE);
+	    perms.add(PosixFilePermission.GROUP_EXECUTE);
+
+	   // Files.setPosixFilePermissions(file.toPath(), perms);
+	}
 	@Override
     protected void onSubmit()
     {    
@@ -250,8 +273,16 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
             	  String ofilename = upload.getClientFileName();
                  // Replace spaces with underscores or any other character
                     filename = ofilename.replaceAll(" ", "_");
+                    
+                    Set<PosixFilePermission> permissions
+                    = PosixFilePermissions.fromString("rwxrwxrwx");
+            FileAttribute<Set<PosixFilePermission>> fileAttributes
+                    = PosixFilePermissions.asFileAttribute(permissions);    
+               
                 File newFile = new File(uploaddir, filename);
-
+                newFile.setReadable(true,false);
+                //Files.setPosixFilePermissions(newFile.toPath(), permissions);
+                //Files.setPosixFilePermissions(newFile.toPath(), permissions);
                 // Check new file, delete if it already existed
                 checkFileExists(newFile);
                 try
@@ -259,6 +290,14 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
                     // Save to new file
                     newFile.createNewFile();
                     upload.writeTo(newFile);
+                   // newFile.setReadable(true);
+                    
+                    
+                   // String fn=newFile.getAbsolutePath();
+                    //Path path = Paths.get(fn);
+                  
+                    //file.setExecutable(true, false);
+                    //file.setWritable(true, false);
                     InstrumentEditForm .this.info("saved file: " + filename);
                 }
                 catch (Exception e)
@@ -303,7 +342,16 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
     }
 
     public static void createFolder(String directoryPath, String folderName) {
-        File newFolder = new File(directoryPath, folderName);
+    	Set<PosixFilePermission> permissions
+        = PosixFilePermissions.fromString("rwxrwxrwx");
+        FileAttribute<Set<PosixFilePermission>> fileAttributes
+        = PosixFilePermissions.asFileAttribute(permissions); 
+       // String uploaddir =  directoryPath+File.separator+ folderName;
+        //Path newDirectoryPath = Paths.get(uploaddir);
+       // Files.createDirectories(newDirectoryPath, fileAttributes);        
+        File newFolder = new File(directoryPath, folderName);       
+        newFolder.setReadable(true,false);
+      
         if (newFolder.mkdir()) {
             System.out.println("Folder created successfully: " + newFolder.getAbsolutePath());
         } else {
