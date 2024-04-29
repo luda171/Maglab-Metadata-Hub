@@ -290,6 +290,7 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
                     // Save to new file
                     newFile.createNewFile();
                     upload.writeTo(newFile);
+                    newFile.setReadable(true,false);
                    // newFile.setReadable(true);
                     
                     
@@ -351,8 +352,13 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
        // Files.createDirectories(newDirectoryPath, fileAttributes);        
         File newFolder = new File(directoryPath, folderName);       
         newFolder.setReadable(true,false);
+       // Files.createDirectory(Paths.get("/the/path"), 
+        	//      PosixFilePermissions.asFileAttribute(      
+        	    //     PosixFilePermissions.fromString("rwxr-x---")
+        	  //    ));
       
         if (newFolder.mkdir()) {
+        	 newFolder.setReadable(true,false);
             System.out.println("Folder created successfully: " + newFolder.getAbsolutePath());
         } else {
             System.out.println("Failed to create folder: " + newFolder.getAbsolutePath());
