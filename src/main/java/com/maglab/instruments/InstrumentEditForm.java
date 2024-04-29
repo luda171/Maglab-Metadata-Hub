@@ -342,27 +342,60 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
         return prefix + (maxNumber + 1);
     }
 
-    public static void createFolder(String directoryPath, String folderName) {
+	
+	public static void createFolder(String directoryPath, String folderName) {
+	    String folderPath = directoryPath + File.separator + folderName;
+
+	    File newFolder = new File(folderPath);
+
+	    // Set folder permissions
+	    if (System.getProperty("os.name").startsWith("Windows")) {
+	        // For Windows
+	        if (newFolder.mkdir()) {	        	
+	        	newFolder.setReadable(true,false);
+	            System.out.println("Folder created successfully: " + newFolder.getAbsolutePath());
+	        } else {
+	            System.out.println("Failed to create folder: " + newFolder.getAbsolutePath());
+	        }
+	    } else {
+	        // For Unix-like systems
+	        try {
+	            Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
+	            java.nio.file.Files.createDirectory(Paths.get(folderPath), PosixFilePermissions.asFileAttribute(permissions));
+	            System.out.println("Folder created successfully: " + folderPath);
+	        } catch (IOException e) {
+	            System.out.println("Failed to create folder: " + folderPath);
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+    public static void createFolder2(String directoryPath, String folderName) {
     	Set<PosixFilePermission> permissions
         = PosixFilePermissions.fromString("rwxrwxrwx");
         FileAttribute<Set<PosixFilePermission>> fileAttributes
         = PosixFilePermissions.asFileAttribute(permissions); 
-       // String uploaddir =  directoryPath+File.separator+ folderName;
+        String uploaddir =  directoryPath+File.separator+ folderName;
         //Path newDirectoryPath = Paths.get(uploaddir);
        // Files.createDirectories(newDirectoryPath, fileAttributes);        
         File newFolder = new File(directoryPath, folderName);       
         newFolder.setReadable(true,false);
-       // Files.createDirectory(Paths.get("/the/path"), 
-        	//      PosixFilePermissions.asFileAttribute(      
-        	    //     PosixFilePermissions.fromString("rwxr-x---")
-        	  //    ));
+        try {
+			java.nio.file.Files.createDirectory(Paths.get("uploaddir"), 
+				     PosixFilePermissions.asFileAttribute(      
+				         PosixFilePermissions.fromString("rwxrwxrwx")
+				      ));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
       
-        if (newFolder.mkdir()) {
-        	 newFolder.setReadable(true,false);
-            System.out.println("Folder created successfully: " + newFolder.getAbsolutePath());
-        } else {
-            System.out.println("Failed to create folder: " + newFolder.getAbsolutePath());
-        }
+       // if (newFolder.mkdir()) {
+        //	 newFolder.setReadable(true,false);
+          //  System.out.println("Folder created successfully: " + newFolder.getAbsolutePath());
+        //} else {
+          //  System.out.println("Failed to create folder: " + newFolder.getAbsolutePath());
+        //}
     }   
 
 	
