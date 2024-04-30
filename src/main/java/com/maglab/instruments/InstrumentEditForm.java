@@ -363,8 +363,14 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
 	        // For Unix-like systems
 	    	 System.out.println("Linux");
 	        try {
+	        	 // Create the folder
+	        	java.nio.file.Files.createDirectory(Paths.get(folderPath));
+	        	 // Set permissions to read, write, execute for owner, group, and others
 	            Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
-	            java.nio.file.Files.createDirectory(Paths.get(folderPath), PosixFilePermissions.asFileAttribute(permissions));
+	            java.nio.file.Files.setPosixFilePermissions(Paths.get(folderPath), permissions);
+
+	            //Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
+	            //java.nio.file.Files.createDirectory(Paths.get(folderPath), PosixFilePermissions.asFileAttribute(permissions));
 	            System.out.println("Folder created successfully: " + folderPath);
 	        } catch (IOException e) {
 	            System.out.println("Failed to create folder: " + folderPath);
