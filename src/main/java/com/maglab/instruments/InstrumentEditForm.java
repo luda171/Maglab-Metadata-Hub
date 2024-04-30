@@ -274,15 +274,9 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
                  // Replace spaces with underscores or any other character
                     filename = ofilename.replaceAll(" ", "_");
                     
-                    Set<PosixFilePermission> permissions
-                    = PosixFilePermissions.fromString("rwxrwxrwx");
-            FileAttribute<Set<PosixFilePermission>> fileAttributes
-                    = PosixFilePermissions.asFileAttribute(permissions);    
-               
+                  
                 File newFile = new File(uploaddir, filename);
-                newFile.setReadable(true,false);
-                //Files.setPosixFilePermissions(newFile.toPath(), permissions);
-                //Files.setPosixFilePermissions(newFile.toPath(), permissions);
+                
                 // Check new file, delete if it already existed
                 checkFileExists(newFile);
                 try
@@ -290,7 +284,21 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
                     // Save to new file
                     newFile.createNewFile();
                     upload.writeTo(newFile);
-                    newFile.setReadable(true,false);
+                                        
+                    if (System.getProperty("os.name").startsWith("Windows")) {
+                        newFile.setReadable(true, false); // Set readable on Windows
+                        newFile.setExecutable(true, false);
+                        newFile.setWritable(true, false);
+                        
+                    } else { // Assuming Linux or Unix-like OS
+                        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rwxrwxrwx");
+                        //FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(permissions);
+                        java.nio.file.Files.setPosixFilePermissions(newFile.toPath(), permissions);
+                        //java.nio.file.Files.createFile(newFile.toPath(), fileAttributes); // Create file with specified permissions on Linux
+                    }
+                    
+                    
+                   // newFile.setReadable(true,false);
                    // newFile.setReadable(true);
                     
                     
