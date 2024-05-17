@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <title>Edit page</title>
+</head>
+<body>
+<div class="container">
+    <form wicket:id="editForm">
+        <fieldset style="display: inline-block;">
+            <legend><h3>Experiment:</h3></legend>
+            <p>
+                <label>Summary:</label>
+                <input style="float: right;" type="text" wicket:id="sum"  size="100" required/>
+            </p>
+             <p>
+                <label>Support:</label>
+                <input style="float: right;" type="text" wicket:id="sup"  size="100" required/>
+            </p>
+            <p>
+                <label>Date start:</label>
+                <input style="float: right;" type="text" wicket:id="dstart" required/>
+            </p>
+             <p>
+                <label>Date end:</label>
+                <input style="float: right;" type="text" wicket:id="finish" required/>
+            </p>
+            <p>
+                <label>Station:</label>
+                <input style="float: right;" type="text" wicket:id="station" required/>
+            </p>
+        </fieldset>
+        <p>
+            <input type="submit" value="Save"/>
+            &nbsp;
+            <a href wicket:id="cancelLink">Cancel</a>
+        </p>
+    </form>
+    <wicket:child/>
+</div>
+</body>
+</html>

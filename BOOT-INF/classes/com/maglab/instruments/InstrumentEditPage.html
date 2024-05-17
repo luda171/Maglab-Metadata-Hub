@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <title>Edit page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        fieldset {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        legend {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-row {
+            margin-bottom: 20px;
+        }
+        
+        .form-row label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+            margin-right: 20px;
+        }
+        
+        .form-row input[type="text"],
+        .form-row input[type="file"], 
+        .form-row select  {
+            width: calc(100% - 170px);
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .form-row input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .form-row input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    
+    <form wicket:id="instredit" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend>Instrument:</legend>
+            <div class="form-row">
+                <label>Title:</label>
+                <input type="text" wicket:id="title" required/>
+            </div>
+            <div class="form-row">
+                <label>File:</label>
+                <input type="file" wicket:id="fileInput" multiple="multiple" id="multiUpload"/>
+            </div>
+            <div class="form-row">
+                <label>User:</label>
+                <input type="text" wicket:id="admin" required/>
+            </div>
+            <div class="form-row">
+                <label>Type:</label>
+                <select wicket:id="instType" name="InstrumentType"></select>
+            </div>
+            <div class="form-row">
+                <label>Delete:</label>
+                <input wicket:id="check" type="checkbox" value="delete">yes
+            </div>
+        </fieldset>
+        <div class="form-row">
+            <input type="submit" value="Save"/>
+            <a href wicket:id="cancelLink">Cancel</a>
+        </div>
+    </form>
+    <wicket:child/>
+</div>
+</body>
+</html>

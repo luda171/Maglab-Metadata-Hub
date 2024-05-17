@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <title>Edit page</title>
+</head>
+<body>
+<div class="container">
+    <form wicket:id="editForm">
+        <fieldset style="display: inline-block;">
+            <legend><h3>Prob:</h3></legend>
+            <p>
+                <label>Title:</label>
+                <input style="float: right;" type="text" wicket:id="title"  size="100" required/>
+            </p>
+            
+             <p>
+                <label>File:</label>
+                 <input wicket:id="file" type="file"/>
+               
+            </p>
+            
+        </fieldset>
+        <p>
+            <input type="submit" value="Save"/>
+             <!-- <button wicket:id="submit">Upload</button>-->
+            &nbsp;
+            <a href wicket:id="cancelLink">Cancel</a>
+        </p>
+    </form>
+    <wicket:child/>
+</div>
+</body>
+</html>

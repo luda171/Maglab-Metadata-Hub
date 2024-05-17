@@ -56,7 +56,7 @@ public class MyExtensionConfig implements WicketApplicationInitConfiguration{
 			
 			 //webApplication.getSharedResources().add("images", new FolderContentResource(new File("/Users/ludab/Laptop/project2021/mag_public/magmetahub/src/main/resources/images/${filename}")));
 			// webApplication.mountResource("images/${filename}", new SharedResourceReference("images"));
-			 configureResourceReferences(webApplication);
+			 //configureResourceReferences(webApplication);
 	  }
 	
 	 
@@ -77,7 +77,7 @@ public class MyExtensionConfig implements WicketApplicationInitConfiguration{
 	            }
 	        });
 	    }*/
-	 public void configureResourceReferences(WebApplication webApplication) {
+	/* public void configureResourceReferences(WebApplication webApplication) {
 		    // Get the resource settings
 		    ResourceSettings resourceSettings = webApplication.getResourceSettings();
 
@@ -115,6 +115,7 @@ public class MyExtensionConfig implements WicketApplicationInitConfiguration{
 		        }
 		    };
 	 }
+	 */
 /*	 static class FolderContentResource implements IResource {
          private final File rootFolder;
          public FolderContentResource(File rootFolder) {

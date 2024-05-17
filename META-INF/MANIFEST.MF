@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven 3.9.6
+Built-By: ludab
+Build-Jdk: 21.0.2
+Implementation-Title: quickstart
+Implementation-Version: 1.0-SNAPSHOT
+Implementation-Vendor-Id: com.maglab
+Implementation-Vendor: Pivotal Software, Inc.
+Implementation-URL: http://projects.spring.io/spring-boot/maglabproject/
+Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: com.maglab.Application
+Spring-Boot-Version: 1.5.2.RELEASE
+Spring-Boot-Classes: BOOT-INF/classes/
+Spring-Boot-Lib: BOOT-INF/lib/
+

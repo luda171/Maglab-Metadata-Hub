@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ <style>
+a:hover{
+  background:orange;
+  background: #1ae9c0;
+  text-decoration:none;
+  font-size:14;
+ }
+.borderedBlock {
+ background: #DEDEDE;
+ background: #ebebeb;
+ 
+ background: #f8f8f8;
+ color: blue;
+ font-weight: bold;
+ border: solid #E9601A;
+ border: white;
+ border-width: thin;
+ padding: 2px 2px 2px 6px;
+ margin: 2px;
+}
+
+#header {
+ text-align: center;
+}
+
+#left {
+ padding: 10px;
+ vertical-align: top;
+ text-align: left;
+ width: 10%;
+ height: 120px;
+
+}
+
+#content {
+ vertical-align: top;
+ width: 90%;
+ height: 100%;
+}
+
+#footer {
+ text-align: center;
+}
+</style>
+</head>
+<body>
+<div id="header" wicket:id="headerPanel">header</div>
+<div id="body">
+	<!-- <div class="borderedBlock" id="menu" wicket:id="menuPanel">menu</div>  -->
+	<table width="100%">
+  <tr>
+  <td id="left" class="borderedBlock">
+ <ul>
+  <ol><a href="#" wicket:id="homeLink">Home </a></ol>
+  <ol><a href="#" wicket:id="probLink">Instruments</a></ol>
+ <!-- <ol><a href="#" wicket:id="fileLink">User </a></ol>  -->
+  </ul>
+  </td>
+   <td id="content"  class="borderedBlock">
+  
+  <wicket:child/>  
+  </td>
+  </tr>
+  </table>
+<!--	<div id="content" wicket:id="contentComponent">content</div>  -->
+</div>
+<div class="borderedBlock" id="footer" wicket:id="footerPanel">footer</div>
+</body>
+</html>

@@ -15,8 +15,8 @@ public class Instrument implements Serializable {
     private String instrumentType;
     private String outOfService;
     //private String admin;
-    private List<InstrumentCategory> categories;
-
+    //private List<InstrumentCategory> categories;
+    private String Categories="";
     // Constructor
     public Instrument(String probePid, String title, String filename, String filestorePath,  String createDate, String modifyDate, String archive, String  instrumentType) {
         this.instrumentPid = probePid;
@@ -102,12 +102,12 @@ public class Instrument implements Serializable {
     //    this.admin = admin;
    // }
 
-    public List<InstrumentCategory> getCategories() {
-        return categories;
-    }
+   // public List<InstrumentCategory> getCategories() {
+     //   return categories;
+    //}
 
-    public void setCategories(List<InstrumentCategory> categories) {
-        this.categories = categories;
-    }
+    //public void setCategories(List<InstrumentCategory> categories) {
+      //  this.categories = categories;
+    //}
 }
 
