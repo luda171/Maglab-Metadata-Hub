@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS instruments (
 	             instrument_type VARCHAR(50)
 			);
 CREATE TABLE instruments ( instrument_pid VARCHAR(36) NOT NULL, title  TEXT NOT NULL, filename TEXT, filestore_path  TEXT NOT NULL, create_date TEXT, modify_date TEXT,out_of_service VARCHAR(1),instrument_type VARCHAR(50));			);
-CREATE  INDEX idx_instr_pid ON instruments (instrument_pid);
+CREATE  Unique INDEX idx_instr_pid ON instruments (instrument_pid);
 #Alter table osf_user_access_log add   refresh_token VARCHAR(50);
 #Alter table osf_user_access_log add   location VARCHAR(10);
 #.headers ON
