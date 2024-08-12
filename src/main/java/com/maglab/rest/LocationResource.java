@@ -343,7 +343,7 @@ public class LocationResource {
 	    // Initialize utility objects
 	    DbUtils dbUtils = new DbUtils();
 	    osfUtils osfUtils = new osfUtils();
-	    
+	    doCheck(expid, station);
 	    // Retrieve OSF token and node information for the wiki
 	    SimpleEntry<String, String> wikiEntry = dbUtils.select_osftokeninfo(expid, "wiki", station);
 	    String wikiNode = wikiEntry.getValue();
@@ -452,7 +452,7 @@ public class LocationResource {
 	     // Initialize utility objects
 	     DbUtils dbUtils = new DbUtils();
 	     osfUtils osfUtils = new osfUtils();
-	     
+	     doCheck(expid, station);
 	     // Get OSF token and node information
 	     SimpleEntry<String, String> entry = dbUtils.select_osftokeninfo(expid, "exp", station);
 	     String token = entry.getKey();
@@ -692,6 +692,8 @@ public class LocationResource {
 
 	            logger.debug("refresh revoked status: " + status);
 	            logger.debug("result: " + result);
+	            
+	            
 	        }
 	    }
 
