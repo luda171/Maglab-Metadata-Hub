@@ -15,12 +15,13 @@ public class Application {
 	static ExecutorService bexec ;
     public static void main(String[] args) throws Exception {
     	 PropConfig.getInstance();
+    	 //PropertyConfigurator.configure("log4j2.xml");
     	 bexec = Executors.newFixedThreadPool( 1);
 		 bexec.execute(new CalUpdater());
 		 System.out.println("init finished");
 		 //mountResource("/images/${filename}", new SharedResourceReference(Application.class, "images/${filename}"));
          SpringApplication.run(Application.class, args);
-         PropertyConfigurator.configure("log4j2.xml");
+        
     }
    
    
