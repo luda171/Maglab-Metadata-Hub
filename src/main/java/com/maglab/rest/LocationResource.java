@@ -68,7 +68,8 @@ import java.net.URL;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 @Path("")
 
@@ -80,6 +81,7 @@ public class LocationResource {
 	Logger logger = LogManager.getLogger(getClass());
 	final static String authorizeUrl = "https://accounts.osf.io/oauth2/authorize";
 	static String tokenurl = "https://accounts.osf.io/oauth2/token";
+	//PropertyConfigurator.configure("log4j.properties");
 	//@SpringBean
 	//private InstrumentService iservice;
 	@GET
