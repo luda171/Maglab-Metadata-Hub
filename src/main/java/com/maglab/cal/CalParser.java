@@ -90,7 +90,7 @@ public class CalParser {
 					GetMethod method = new GetMethod(u);
 					method.setFollowRedirects(true);
 					int statusCode = instance.executeMethod(method);
-					System.out.println("statusCode"+statusCode);
+					System.out.println("Calendar statusCode"+statusCode);
 					String body = method.getResponseBodyAsString();
 					File targetFile = new File("targetFile.tmp");
 					FileWriter fileWriter = new FileWriter(targetFile);
@@ -219,7 +219,7 @@ public class CalParser {
 								 if (token.contains("Support")) {
 										
 								       String tok= token.substring(token.indexOf(":") + 1);
-								       System.out.println("support"+tok);
+								      // System.out.println("support"+tok);
 								       ex.setSupport(tok.trim());
 								 }     }
 								
@@ -265,8 +265,8 @@ public class CalParser {
 						}
 						}
 							delete(conn);
-						System.out.println("finished loading calendar for: " +facilityfilter);
-						System.out.println("proxy"+proxy);
+						//System.out.println("finished loading calendar for: " +facilityfilter);
+						//System.out.println("proxy"+proxy);
 						// statement.close();
 					}
 				} catch (Exception e) {
@@ -295,7 +295,7 @@ public void delete(Connection conn) {
 	try {
 		ps = conn.prepareStatement(delete_SQL);
 		numRowsInserted = ps.executeUpdate();
-		System.out.print("deleted:" + numRowsInserted);
+		//System.out.print("deleted:" + numRowsInserted);
 	} catch (SQLException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -354,7 +354,7 @@ public void delete(Connection conn) {
 			ps.setString(15,ex.getPID());
 			ps.setString(16,ex.getDTSTART()+";"+ex.getPID());
 			numRowsInserted = ps.executeUpdate();
-			System.out.print("inserted:" + numRowsInserted);
+			//System.out.print("inserted:" + numRowsInserted);
 			}
 			
 		} catch (SQLException e) {

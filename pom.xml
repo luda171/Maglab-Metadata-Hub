@@ -67,6 +67,16 @@
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
             <version>${wicket.version}</version>
+            <exclusions>
+				<exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
+        </exclusions>
         </dependency>
       <!--    <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -81,8 +91,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-
+       
+        <exclusions><exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+    </exclusions>
+     </dependency>
         <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
@@ -92,6 +107,12 @@
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
+        <exclusions>
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
+        </exclusions>
         </dependency>
 		<!--  WICKET DEPENDENCIES -->
 		<dependency>
@@ -119,11 +140,18 @@
 		
 
 		<!-- LOGGING DEPENDENCIES - SLF4J-SIMPLE -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>
+			 <exclusions>
+       
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
+    </exclusions>
+		</dependency> -->
 
 		<!--  JUNIT DEPENDENCY FOR TESTING -->
 		<dependency>
@@ -209,11 +237,35 @@
     <artifactId>wicket-jquery-ui-calendar</artifactId>
     <version>6.29.0</version>
 </dependency>
-    <dependency>
+<!-- 
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.19.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.19.0</version>
+    <type>test-jar</type>
+    <scope>test</scope>
+</dependency>  -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.20.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.20.0</version>
+</dependency>
+
+ <!--    <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver</artifactId>
         <version>3.8.1</version>
-    </dependency>
+    </dependency> -->
 </dependencies>
 <!-- https://mvnrepository.com/artifact/com.googlecode.wicket-jquery-ui/wicket-jquery-ui-samples -->
 <!--<dependency>

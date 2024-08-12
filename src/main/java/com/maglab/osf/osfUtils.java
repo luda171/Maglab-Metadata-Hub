@@ -36,6 +36,8 @@ import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.google.gson.Gson;
@@ -101,6 +103,7 @@ public class osfUtils {
 	boolean fproxy = Boolean.parseBoolean(f_proxy);
 	// boolean proxy = false;
 	String osf_name = "";
+	Logger logger = LogManager.getLogger(getClass());
 	
 	public String check_providers( String expnode, String token) {
 	//String url="https://api.test.osf.io/v2/nodes/"+expnode+"/files/providers/{provider}/"
@@ -136,6 +139,7 @@ public class osfUtils {
 		Entry fr =  get_info(checkurl, token);
 		String result = (String) fr.getValue();
 		System.out.println("folderlist:"+result);
+		logger.debug("Folder list: " + result);
 		Integer frcode = (Integer) fr.getKey();
 		System.out.println(frcode);
 		System.out.println("osf folder status: " + frcode);
@@ -153,6 +157,7 @@ public class osfUtils {
 			 JsonElement foldpath = pObj.get("attributes").getAsJsonObject().get("path");
 			 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
 			 System.out.println("folder path existed:"+fid);
+			 logger.debug("Folderid: " + fid);
 			 break;
 		}
 		}
@@ -171,35 +176,59 @@ public class osfUtils {
 		}
 		return fid;
 	}
-    public String check_folders( String expnode, String token, String folderpath,String provider) {
+	
+	public String check_folders(String expNode, String token, String folderPath, String provider) {
+	    // Construct URLs for checking and creating folders
+	    String putFolderUrl = String.format("https://files.osf.io/v1/resources/%s/providers/%s/?kind=folder&name=%s", expNode, provider, folderPath);
+	    String checkUrl = String.format("https://api.osf.io/v2/nodes/%s/files/%s/?filter[name]=%s&filter[kind]=folder", expNode, provider, folderPath);
+
+	    logger.debug("Folder check URL: " + checkUrl);
+	    
+	    // Get the folder ID
+	    String folderId = get_folder_with_next(checkUrl, token, folderPath);
+	   
+	    // If the folder does not exist, create it
+	    if (folderId.isEmpty()) {
+	        logger.debug("Folder does not exist, attempting to create: " + putFolderUrl);
+
+	        Entry<Integer, String> folderCreationResponse = do_put_folder(putFolderUrl, token);
+
+	        if (folderCreationResponse != null) {
+	            int responseCode = folderCreationResponse.getKey();
+	            String responseMessage = folderCreationResponse.getValue();
+	            logger.debug("Folder creation response: " + responseMessage);
+	            logger.debug("OSF folder status code: " + responseCode);
+
+	            if (responseCode >= 400) {
+	                return String.format("error:%d:%s", responseCode, responseMessage);
+	            }
+
+	            //JsonElement jsonElement = JsonParser.parseString(responseMessage);
+	            JsonElement jsonElement = new JsonParser().parse(responseMessage);
+	            JsonObject data = jsonElement.getAsJsonObject().get("data").getAsJsonObject();
+	            
+	            if (data != null) {
+	                JsonElement pathElement = data.get("attributes").getAsJsonObject().get("path");
+	                folderId = (pathElement instanceof JsonNull) ? "" : pathElement.getAsString();
+	                logger.debug("Folder path created: " + folderId);
+	            }
+	        }
+	    }
+
+	    String folderPathWithProvider = provider + folderId;
+	    logger.debug("Final folder path: " + folderPathWithProvider);
+	    
+	    return folderPathWithProvider;
+	}
+
+    public String check_folders0( String expnode, String token, String folderpath,String provider) {
 	String putfolderurl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+provider+"/?kind=folder&name=" +folderpath;
 	String fid="";
 	 //get list of folders
 	//String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[kind]=folder";
-	String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[name]="+folderpath;
-	/*Entry fr =  get_info(checkurl, token);
-	String result = (String) fr.getValue();
-	System.out.println("folderlist:"+result);
-	Integer frcode = (Integer) fr.getKey();
-	System.out.println(frcode);
-	System.out.println("osf folder status: " + frcode);
-	JsonElement jsonEl2 = new JsonParser().parse(result);
-	JsonObject obj = jsonEl2.getAsJsonObject();
-	JsonArray jarray = obj.getAsJsonArray("data");
-
-	for (JsonElement pa : jarray) {
-		JsonObject pObj = pa.getAsJsonObject();
-	JsonElement folderk = pObj.get("attributes").getAsJsonObject().get("kind");
-	String fkname = (folderk instanceof JsonNull) ? "" : folderk.getAsString();
-	JsonElement foldername = pObj.get("attributes").getAsJsonObject().get("name");
-	String fname = (foldername instanceof JsonNull) ? "" : foldername.getAsString();
-	if (fkname.equals("folder")&& fname.equals(folderpath)) {
-		 JsonElement foldpath = pObj.get("attributes").getAsJsonObject().get("path");
-		 fid = (foldpath instanceof JsonNull) ? "" : foldpath.getAsString();
-		 System.out.println("folder path existed:"+fid);
-	}
-	}
-	*/
+	//String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[name]="+folderpath;
+	String checkurl="https://api.osf.io/v2/nodes/"+expnode+"/files/" +provider+"/?filter[name]="+folderpath+"&filter[kind]=folder";
+	   logger.debug("folder check  URL: " + checkurl);
 	fid = get_folder_with_next(checkurl,token,folderpath);
 //if folder not exists create it 
 	if ( fid.equals("")) {
@@ -538,6 +567,7 @@ public class osfUtils {
 			int code = response.getStatusLine().getStatusCode();
 			HttpEntity resentity = response.getEntity();
 			result = EntityUtils.toString(resentity);
+			logger.debug("OSF do put file: " + result);
 			System.out.println(result);
 			entry = new AbstractMap.SimpleEntry<>(code, result);
 		} catch (UnsupportedEncodingException e) {
@@ -582,6 +612,7 @@ public class osfUtils {
 			HttpEntity resentity = response.getEntity();
 			result = EntityUtils.toString(resentity);
 			System.out.println(result);
+			logger.debug("OSF do put folder: " + result);
 			entry = new AbstractMap.SimpleEntry<>(code, result);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
@@ -656,7 +687,7 @@ public class osfUtils {
 			// JsonArray data = user.getAsJsonArray("data");
 			// String wiki_id = data.get("id").getAsString();
 			wikitext = (String) data.get("attributes").getAsJsonObject().get("content").getAsString();
-			System.out.println(wikitext);
+			//System.out.println(wikitext);
 		} catch (Exception ee) {
 			// TODO Auto-generated catch block
 			ee.printStackTrace();
@@ -671,7 +702,7 @@ public class osfUtils {
 			String wikiurl = "https://api.osf.io/v2/wikis/" + wiki_id + "/content/";
 			Entry ewiki = get_info(wikiurl, token);
 			wikicontent = (String) ewiki.getValue();
-			System.out.println("wikicontent" + wikicontent);
+			//System.out.println("wikicontent" + wikicontent);
 
 		} catch (Exception ee) {
 			// TODO Auto-generated catch block
@@ -719,7 +750,7 @@ public class osfUtils {
 		// "{\"data\":{\"id\":\""+wikiID+"\",\"type\":\"wiki-versions\",\"attributes\":{\"name\":\"home\",\"content\":\""+
 		// content +"\"}}}";
 		String mjson = "{\"data\":" + s + "}";
-		System.out.println(mjson);
+		//System.out.println(mjson);
 		return mjson;
 	}
 

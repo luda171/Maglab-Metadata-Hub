@@ -40,11 +40,16 @@ import com.maglab.PropConfig;
 import com.maglab.instruments.InstrumentEditPage.FileListView;
 import com.maglab.panel.ProbHomePage;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class InstrumentEditForm extends Form<InstrumentEditForm> {
 	private FormComponent title;
 	private FormComponent admin;
 	private FormComponent out;
+	//private static final long serialVersionUID = -1900139055484193969L;
 	//private FormComponent instype;
     //private FormComponent ret;
     static PropConfig pconf = PropConfig.getInstance();
@@ -53,7 +58,12 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
     /** Reference to listview for easy access. */
     //private final FileListView fileListView;
     FileUploadField fileUploadField;
-
+    Logger logger = LogManager.getLogger(InstrumentEditForm.class);
+    public void init() throws IOException 
+    {
+      String log4jConfPath="log4j.properties";
+      PropertyConfigurator.configure(log4jConfPath);
+    }
     @SpringBean
 	private  InstrumentService serv;
     private final boolean isCreate;
@@ -318,10 +328,14 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
         
         if   (!isCreate) {
             serv.updateInstrument(existedpid,filename,  title.getInput(), delstatus, sm.getObject().toString());
+            logger.debug("INSTRUPDATE:"+" "+ admin.getInput() + ","+filename+", "+existedpid+","+title.getInput()+", "+ sm.getObject().toString()+","+delstatus);
             } else {
             	//insertInstrument(String pid, String filename, String title, String fpath,String out,String type)
             serv.insertInstrument(newFolderName, filename,  title.getInput(), directoryPath,"F", sm.getObject().toString());
+            logger.debug("INSTRUPDATE:"+" "+ admin.getInput() + ","+filename+", "+newFolderName+","+title.getInput()+", "+ sm.getObject().toString()+",F");
             }
+       
+    	
         setResponsePage(ProbHomePage.class); 
     }
 
