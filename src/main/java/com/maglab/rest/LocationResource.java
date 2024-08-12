@@ -81,7 +81,8 @@ public class LocationResource {
 	Logger logger = LogManager.getLogger(getClass());
 	final static String authorizeUrl = "https://accounts.osf.io/oauth2/authorize";
 	static String tokenurl = "https://accounts.osf.io/oauth2/token";
-	//PropertyConfigurator.configure("log4j.properties");
+	
+	//PropertyConfigurator.configure("path/to/log4j.properties");
 	//@SpringBean
 	//private InstrumentService iservice;
 	@GET
