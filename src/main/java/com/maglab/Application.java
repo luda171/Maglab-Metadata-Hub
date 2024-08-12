@@ -20,7 +20,7 @@ public class Application {
 		 System.out.println("init finished");
 		 //mountResource("/images/${filename}", new SharedResourceReference(Application.class, "images/${filename}"));
          SpringApplication.run(Application.class, args);
-         PropertyConfigurator.configure("log4j.properties");
+         PropertyConfigurator.configure("log4j2.xml");
     }
    
    
