@@ -393,29 +393,31 @@ public class LocationResource {
 			                @QueryParam("name") String filename,
 			                @QueryParam("expid") String expid,
 			                @QueryParam("station") String station) {
-		DbUtils utils = new DbUtils();
+		DbUtils dbUtils = new DbUtils();
 		osfUtils osfu = new osfUtils();
+		//refresh token
 		doCheck(expid, station);
-		SimpleEntry entry = utils.select_osftokeninfo(expid, "wiki",station);
-		String wikinode = (String) entry.getValue();
-		String token = (String) entry.getKey();
+		SimpleEntry  wikiEntry = dbUtils.select_osftokeninfo(expid, "wiki",station);
+		String wikinode = (String)  wikiEntry.getValue();
+		String token = (String)  wikiEntry.getKey();
 		System.out.println("wikinode" + wikinode);
-		logger.debug("Wiki node: " + wikinode + ", Token: " + token);
-		SimpleEntry expentry = utils.select_osftokeninfo(expid, "exp",station);
-		String expnode = (String) entry.getValue();
+		logger.debug("Wiki node: " + wikinode + ", Token: " + token+",station"+ station );
+		SimpleEntry expentry = dbUtils.select_osftokeninfo(expid, "exp",station);
+		String expnode = (String) expentry.getValue();
 		System.out.println(expnode);
 		logger.debug("Experiment node: " + expnode);
 		// String wtext=osfu.get_wiki_text(expid, token);
 		String content = osfu.get_wiki_content(expnode, token, wikinode);
 		String cwiki = content + msg;
-		System.out.println(cwiki);
+		//System.out.println(cwiki);
 		String wikiurl = "https://api.osf.io/v2/wikis/" + wikinode + "/versions/";
+		logger.debug("Wiki URL: " + wikiurl);
 		String wj = osfu.append_json_wiki(wikinode, cwiki);
 		// String result = osfu.do_post(wikiurl, wj, token);
 		Entry e = osfu.do_post(wikiurl, wj, token);
 		Integer status = (Integer) e.getKey();
 		System.out.println("wiki post status" + status);
-		logger.debug("Wiki URL: " + wikiurl);
+	
 		String result = (String) e.getValue();
 		// String result = osfu.do_put_wiki(puturl, cwiki, token);
 		System.out.println(result);
@@ -423,7 +425,7 @@ public class LocationResource {
 			status = 403;
 		if (result == null)
 			result = "hub problem";
-		logger.debug("OSFWIKI"+" "+ filename + " "+wikinode+" "+expnode+" "+status+" "+result);
+		logger.debug("OSFWIKI"+" "+ filename + "wikinode:"+wikinode+"expnode:"+expnode);
 		logger.debug("Final wiki post status: " + status + ", Result: " + result);
 		ResponseBuilder r = Response.status(status).entity(result);
 		return r.build();
@@ -599,6 +601,7 @@ public class LocationResource {
 		}
 		String puturl = "https://files.osf.io/v1/resources/" + expnode + "/providers/"+prp+"?kind=file&name="	+ filename;
 		System.out.println(puturl);
+		logger.debug("OSFFILE:"+ puturl);
 		ResponseBuilder responseBuilder;
 		Entry entryResult = (SimpleEntry) osfu.do_put_file(puturl, in, token);
 		if (entryResult != null) {
@@ -632,7 +635,7 @@ public class LocationResource {
 					Integer code = (Integer) en.getKey();
 					System.out.println(result);
 					System.out.println("osf status to add contributers: " + code);
-					logger.debug("OSFFILE:folderfail "+" "+ filename + " "+folderpath+" "+expnode+" "+token+" "+provider+" "+station+" "+component+code+result);
+					logger.debug("OSFFILE:addcontributors"+" "+ filename + " "+folderpath+" "+expnode+" "+token+" "+provider+" "+station+" "+component+code+result);
 			    }
 			}
 				
@@ -733,7 +736,7 @@ public class LocationResource {
 			String token =(String) mosf.get("access_token");
 			String refresh_token=(String) mosf.get("refresh_token");
 			System.out.println("token" + token);
-			 logger.debug("token: " + token);
+			 logger.debug("logoff:asc_token: " + token);
 			if (token != null) {
 				Entry en = osf.do_token(token, "revoke");
 				
@@ -744,8 +747,9 @@ public class LocationResource {
 				String dt =(String) mosf.get("dtgranted");
 				// status R -revoke
 				utils.update_token_status(token, expid, dt,"R",station);
-				logger.debug("revoked status: " + status);
-	            logger.debug("result: " + result);
+				logger.debug("logoff:revoked status: " + status);
+	            logger.debug("logoff:result: " + result);
+	            
               Entry ent = osf.do_token(refresh_token, "revoke");
 				
 				status = (Integer) ent.getKey();
