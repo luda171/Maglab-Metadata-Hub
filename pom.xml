@@ -56,13 +56,32 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
+		<log4j2.version>2.20.0</log4j2.version>
+		<spring-boot.version>1.5.2.RELEASE</spring-boot.version>
 	</properties>
 	<dependencies>
 	   <dependency>
             <groupId>com.giffing.wicket.spring.boot.starter</groupId>
             <artifactId>wicket-spring-boot-starter</artifactId>
             <version>1.0.5</version>
+            <exclusions>
+            <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+             </exclusions>
         </dependency>
+       <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+        <exclusions>
+                <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+        </exclusions>
+</dependency>
+
 	 <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
@@ -76,6 +95,11 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </exclusion>
+        <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+
         </exclusions>
         </dependency>
       <!--    <dependency>
@@ -96,7 +120,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
         </exclusion>
-    </exclusions>
+               <exclusion>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-logging</artifactId>
+            </exclusion>
+             </exclusions>
      </dependency>
         <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -280,6 +308,18 @@
 			<scope>test</scope>
 		</dependency>
 		-->
+		<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+</dependencyManagement>
+
 	<build>
 		<resources>
 			<resource>
