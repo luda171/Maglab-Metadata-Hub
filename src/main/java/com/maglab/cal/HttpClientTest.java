@@ -17,7 +17,7 @@ public class HttpClientTest  {
 	 private static final int TOTAL_MAX_CONNECTIONS = 4000;
 	 Integer connectTimeout = readTimeout; //30sec tcp connection handshake
 	 int maxConnectionsPerHost=400;
-	 int retryCount=3;
+	 int retryCount=2;
 	 HttpClient httpClient;
 	 
 	 public HttpClientTest(Integer readTimeout, Integer connectTimeout) {

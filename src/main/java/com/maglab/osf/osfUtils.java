@@ -90,9 +90,12 @@ public class osfUtils {
 		httpClient = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy())
 				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).evictExpiredConnections()
 				// .setRoutePlanner(routePlanner)
+				 //.setConnectTimeout(30000)
+			     //   .setSocketTimeout(5000)
 				.build();
 
-		config = RequestConfig.custom().setProxy(proxy).build();
+		config = RequestConfig.custom().setProxy(proxy).setConnectTimeout(60000)
+		        .setSocketTimeout(60000).build();
 
 	}
 
