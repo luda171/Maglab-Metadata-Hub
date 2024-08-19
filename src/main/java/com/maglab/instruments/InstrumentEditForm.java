@@ -40,7 +40,7 @@ import com.maglab.PropConfig;
 import com.maglab.instruments.InstrumentEditPage.FileListView;
 import com.maglab.panel.ProbHomePage;
 
-import org.apache.log4j.PropertyConfigurator;
+//import org.apache.log4j.PropertyConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,11 +59,11 @@ public class InstrumentEditForm extends Form<InstrumentEditForm> {
     //private final FileListView fileListView;
     FileUploadField fileUploadField;
     Logger logger = LogManager.getLogger(InstrumentEditForm.class);
-    public void init() throws IOException 
-    {
-      String log4jConfPath="log4j.properties";
-      PropertyConfigurator.configure(log4jConfPath);
-    }
+    //public void init() throws IOException 
+    //{
+     // String log4jConfPath="log4j.properties";
+     // PropertyConfigurator.configure(log4jConfPath);
+   // }
     @SpringBean
 	private  InstrumentService serv;
     private final boolean isCreate;
