@@ -2,8 +2,8 @@
 <Configuration status="WARN">
     <Appenders>
         <!-- Define a RollingFileAppender -->
-        <RollingFile name="R" fileName="/data/web/Maglab-Metadata-Hub/logs/magapp2.log"
-                     filePattern="/data/web/Maglab-Metadata-Hub/logs/magapp2-%d{yyyy-MM-dd}-%i.log.gz">
+        <RollingFile name="R" fileName="/Users/ludab/Laptop/project2021/mag_public/magmetahub/logs/magapp2.log"
+                     filePattern="/Users/ludab/Laptop/project2021/mag_public/magmetahub/logs/magapp2-%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout>
                 <Pattern>%d{ISO8601} [%t] %-5p %c %x - %m%n</Pattern>
             </PatternLayout>

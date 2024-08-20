@@ -70,7 +70,7 @@ public class osfUtils {
 
 	static HttpClient httpClient;
 	static RequestConfig config;
-
+	static RequestConfig config2;
 	static {
 
 		HttpHost proxy = new HttpHost(proxyhost, 8080, "http");
@@ -93,9 +93,21 @@ public class osfUtils {
 				 //.setConnectTimeout(30000)
 			     //   .setSocketTimeout(5000)
 				.build();
-
-		config = RequestConfig.custom().setProxy(proxy).setConnectTimeout(60000)
-		        .setSocketTimeout(60000).build();
+//240sec
+		config = RequestConfig.custom().setProxy(proxy).
+				//Determines the timeout in milliseconds until a connection is established. 
+				setConnectTimeout(60000)
+				// Returns the timeout in milliseconds used when requesting a connection from the connection manager.
+				.setConnectionRequestTimeout(240000)
+//				which is the timeout for waiting for data or, put differently, a maximum period inactivity between two consecutive data packets).
+		        .setSocketTimeout(240000).build();
+		config2 = RequestConfig.custom().
+				//Determines the timeout in milliseconds until a connection is established. 
+				setConnectTimeout(60000)
+				// Returns the timeout in milliseconds used when requesting a connection from the connection manager.
+				.setConnectionRequestTimeout(240000)
+//				which is the timeout for waiting for data or, put differently, a maximum period inactivity between two consecutive data packets).
+		        .setSocketTimeout(240000).build();
 
 	}
 
@@ -268,6 +280,9 @@ public class osfUtils {
 		if (proxy) {
 			get.setConfig(config);
 		}
+		else {
+			get.setConfig(config2);
+		}
 		// get.addHeader("Content-Type", "application/vnd.api+json");
 		get.addHeader("Authorization", "Bearer " + token);
 		try {
@@ -298,6 +313,9 @@ public class osfUtils {
 		post = new HttpPost(tokenurl);
 		if (proxy) {
 			post.setConfig(config);
+		}
+		else {
+			post.setConfig(config2);
 		}
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
 		nameValuePairs.add(new BasicNameValuePair("refresh_token", rftoken));
@@ -341,6 +359,9 @@ public class osfUtils {
 		String result = null;
 		if (proxy) {
 			post.setConfig(config);
+		}
+		else {
+			post.setConfig(config2);
 		}
 
 		// String POST_PARAMS = "code=" + code + "&client_id=" + clientID +
@@ -440,6 +461,9 @@ public class osfUtils {
 		if (proxy) {
 			post.setConfig(config);
 		}
+		else {
+			post.setConfig(config2);
+		}
 		post.addHeader("Content-Type", "application/vnd.api+json");
 		post.addHeader("Authorization", "Bearer " + token);
 		StringEntity entity;
@@ -477,6 +501,9 @@ public class osfUtils {
 
 		if (proxy) {
 			post.setConfig(config);
+		}
+		else {
+			post.setConfig(config2);
 		}
 		post.addHeader("Content-Type", "application/vnd.api+json");
 		post.addHeader("Authorization", "Bearer " + token);
@@ -554,6 +581,9 @@ public class osfUtils {
 		if (fproxy) {
 			post.setConfig(config);
 		}
+		else {
+			post.setConfig(config2);
+		}
 		post.addHeader("Content-Type", "application/octet-stream");
 		post.addHeader("Authorization", "Bearer " + token);
 
@@ -597,6 +627,9 @@ public class osfUtils {
 		String result = null;
 		if (fproxy) {
 			post.setConfig(config);
+		}
+		else {
+			post.setConfig(config2);
 		}
 		post.addHeader("Content-Type", "application/octet-stream");
 		post.addHeader("Authorization", "Bearer " + token);

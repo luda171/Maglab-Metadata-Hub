@@ -516,6 +516,7 @@ public class LocationResource {
 	         logger.debug("File upload entry is null");
 	         responseBuilder = Response.status(500); 
 	     }
+	     /*
 	     // Check contributors of the experiment node
 	     List<String> userIds = osfUtils.get_contributers(expNode, token);
 	     
@@ -531,7 +532,7 @@ public class LocationResource {
 	                 logger.debug("Added contributor" + userId+ "with status: " + statusCode + ", Result: " + result);
 	             }
 	         }
-	     }
+	     } */
 	     
 	     return responseBuilder.build();
 	 }
@@ -619,7 +620,7 @@ public class LocationResource {
 		}
 		
 		//check contributors of exp node
-	    List users_ids = osfu.get_contributers(expnode, token);
+	  /*  List users_ids = osfu.get_contributers(expnode, token);
 	        
 		if (component!=null) {
 			String url_contributers="https://api.test.osf.io/v2/nodes/"+expnode+"/contributors/";	
@@ -641,6 +642,7 @@ public class LocationResource {
 				
 			}
 		}
+		*/
 		return responseBuilder.build();
 	}
 

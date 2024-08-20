@@ -25,6 +25,7 @@ pulsefacility.db
 # Maven
 target/
 dist/
+logs/
 
 # JetBrains IDE
 .idea/
