@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org">
+<head>
+    <title>Statistical Report</title>
+</head>
+<body>
+    <div>
+        <!-- Button for generating the statistical report -->
+        <button wicket:id="generateReportButton">Generate Statistical Report</button>
+    </div>
+
+    <!-- Placeholder for the report -->
+    <!-- <div wicket:id="reportContainer"></div> -->
+     <div wicket:id="reportContainer">
+        <!-- Default content before report generation -->
+        <p>No report generated yet.</p>
+    </div>
+    <wicket:fragment wicket:id="reportFragment">
+        <div>
+            <p wicket:id="reportContent"></p>
+        </div>
+    </wicket:fragment>
+     <a href wicket:id="cancelLink">Cancel</a>
+</body>
+</html>

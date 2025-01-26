@@ -8,6 +8,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import com.giffing.wicket.spring.boot.context.scan.WicketHomePage;
+import com.maglab.report.StatisticalReportPage;
 
 
 @AuthorizeInstantiation("USER")
@@ -30,6 +31,8 @@ public class HomeTemplatePage extends WebPage {
 		add(pl);
 		BookmarkablePageLink prl = new BookmarkablePageLink("probLink", ProbHomePage.class);
 		add(prl);
+		BookmarkablePageLink rl = new BookmarkablePageLink("reportLink", StatisticalReportPage.class);
+		add(rl);
 	
 		//add(new BookmarkablePageLink("fileLink", MyHomePage.class)); 
 		//add(new Label(CONTENT_ID, new MyHomePage(parameters)));

@@ -1,7 +1,13 @@
 package com.maglab.cal;
 import java.io.IOException;
+import javax.net.ssl.*;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.HttpClient;
@@ -10,8 +16,10 @@ import org.apache.commons.httpclient.HttpMethodRetryHandler;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
-
+import java.security.cert.X509Certificate;
 public class HttpClientTest  {
 	 Integer readTimeout=29000; //10sec  The timeout says how long to wait for the other end to send a SYN-ACK in response to the initial SYN packet(s).
 	 private static final int TOTAL_MAX_CONNECTIONS = 4000;
@@ -26,6 +34,20 @@ public class HttpClientTest  {
 	 }
 	 
 	 public HttpClient initclient(String hproxy,int port) {
+		 try {
+			trustAllSslCertificates();
+		} catch (KeyManagementException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		 
+		 // Register a custom protocol for HTTPS to bypass SSL
+		    Protocol easyHttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLSocketFactory(), 443);
+		    Protocol.registerProtocol("https", easyHttps);
+	 
 	 MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
      connectionManager.getParams().setConnectionTimeout(connectTimeout);
 	 connectionManager.getParams().setSoTimeout(readTimeout);
@@ -77,6 +99,37 @@ public class HttpClientTest  {
   
       return httpClient;
 	}
+	 
+	 
+	 /**
+	     * Trust all SSL certificates by configuring a custom TrustManager.
+	     */
+	    private void trustAllSslCertificates() throws NoSuchAlgorithmException, KeyManagementException {
+	        TrustManager[] trustAllCerts = new TrustManager[]{
+	            new X509TrustManager() {
+	                @Override
+	                public void checkClientTrusted(X509Certificate[] chain, String authType) {
+	                }
+
+	                @Override
+	                public void checkServerTrusted(X509Certificate[] chain, String authType) {
+	                }
+
+	                @Override
+	                public X509Certificate[] getAcceptedIssuers() {
+	                    return null;
+	                }
+	            }
+	        };
+
+	        SSLContext sc = SSLContext.getInstance("SSL");
+	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+	        // Disable hostname verification
+	        HostnameVerifier allHostsValid = (hostname, session) -> true;
+	        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+	    }
 	 
 	 public HttpClient getHttpClient(){
 		 return httpClient;
