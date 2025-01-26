@@ -94,7 +94,10 @@ public class StatisticalReportPage extends WebPage {
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:pulsefacility.db");
              PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
+        	 PreparedStatement statement2 = connection.prepareStatement(sql2);	
+             ResultSet resultSet = statement.executeQuery();ResultSet resultSet2 = statement2.executeQuery()) {
+        	
+           
 
             reportBuilder.append("<table border='1'>");
             reportBuilder.append("<tr><th>Year</th><th>Quarter</th><th>Unique Experiment OSF Node Count</th></tr>");
@@ -105,15 +108,17 @@ public class StatisticalReportPage extends WebPage {
                         .append("<td>").append(resultSet.getInt("unique_count")).append("</td>")
                         .append("</tr>");
             }
+            
+        
             reportBuilder.append("</table>");
             
             reportBuilder.append("<table border='1'>");
             reportBuilder.append("<tr><th>Year</th><th>Quarter</th><th>Unique OSF Name  Count</th></tr>");
-            while (resultSet.next()) {
+            while (resultSet2.next()) {
                 reportBuilder.append("<tr>")
-                        .append("<td>").append(resultSet.getString("year")).append("</td>")
-                        .append("<td>").append(resultSet.getInt("quarter")).append("</td>")
-                        .append("<td>").append(resultSet.getInt("user_count")).append("</td>")
+                        .append("<td>").append(resultSet2.getString("year")).append("</td>")
+                        .append("<td>").append(resultSet2.getInt("quarter")).append("</td>")
+                        .append("<td>").append(resultSet2.getInt("user_count")).append("</td>")
                         .append("</tr>");
             }
             reportBuilder.append("</table>");
